@@ -5,7 +5,7 @@ import numpy as np
 app = FastAPI()
 
 # Load the saved model
-model = joblib.load("xgb_calories_model.pkl")
+model = joblib.load("xgb_model.pkl")
 
 @app.get("/")
 def home():
