@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 fastapi
 uvicorn
 pandas
@@ -5,3 +6,12 @@ numpy==1.26.4
 scikit-learn==1.5.1
 xgboost==3.0.0
 joblib==1.4.2
+=======
+fastapi
+uvicorn
+pandas
+numpy==1.26.4
+scikit-learn==1.5.1
+xgboost==3.0.0
+joblib==1.4.2
+>>>>>>> 6917c7d77a4d0b06569cb69ffe42aa06f6975c73
