@@ -1,33 +1,39 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
 
-# Initialize the app
+# Define the expected request structure
+class InputData(BaseModel):
+    Gender: int
+    Age: int
+    Height: float
+    Weight: float
+    Duration: float
+    Heart_Rate: float
+    Body_Temp: float
+
 app = FastAPI()
 
-# Load the trained model and scaler
+# Load model and scaler
 model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
-
-# Define the input schema
-class InputData(BaseModel):
-    data: list[list[float]]  # list of rows, each row is a list of features
 
 @app.get("/")
 def home():
     return {"message": "Calorie Prediction API is running!"}
 
 @app.post("/predict/")
-def predict(input_data: InputData):
-    # Convert to DataFrame
-    df = pd.DataFrame(input_data.data)
+def predict(data: List[InputData]):
+    # Convert list of InputData into DataFrame
+    df = pd.DataFrame([d.dict() for d in data])
 
-    # Scale the data
-    scaled_data = scaler.transform(df)
+    # Scale the input
+    scaled = scaler.transform(df)
 
     # Predict
-    prediction = model.predict(scaled_data)
+    predictions = model.predict(scaled)
 
-    return {"Predicted Calories": prediction.tolist()}
+    return {"Predicted Calories": predictions.tolist()}
