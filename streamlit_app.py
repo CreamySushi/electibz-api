@@ -4,26 +4,17 @@ import matplotlib.pyplot as plt
 import time
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+
 def show_splash_screen():
-    splash = st.empty()  # Create placeholder
+    splash = st.empty()  
     splash.markdown("""
         <div style='text-align: center; margin-top: 100px;'>
-            <h1>🚀 Welcome to My App</h1>
+            <h1>dawdawfawfaw</h1>
             <p>Loading, please wait...</p>
         </div>
     """, unsafe_allow_html=True)
     time.sleep(1)
-    splash.empty()  # Now it's safe to call empty()
-
-# Show splash screen only once per session
-if "splash_shown" not in st.session_state:
-    st.session_state.splash_shown = False
-
-if not st.session_state.splash_shown:
-    show_splash_screen()
-    st.session_state.splash_shown = True
-
-
+    splash.empty()
 
 def Show_Main_Screen():
     
@@ -59,9 +50,6 @@ def Show_Main_Screen():
             st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
         else:
             st.error(f"Error from API: {response.text}")
-
-
-
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
@@ -108,3 +96,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Show splash screen only once per session
+if "splash_shown" not in st.session_state:
+    st.session_state.splash_shown = False
+
+if not st.session_state.splash_shown:
+    show_splash_screen()
+    st.session_state.splash_shown = True
