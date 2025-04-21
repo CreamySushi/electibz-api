@@ -21,29 +21,14 @@ def Show_Main_Screen():
     st.title("🔥 Calorie Burn Predictor")
     api_url = "https://electibz-api.onrender.com/predict/"
     
-    defaults = {
-        "gender": "Male",
-        "age": 25,
-        "height": 170,
-        "weight": 70,
-        "duration": 30,
-        "heart_rate": 100,
-        "body_temp": 37.0
-    }
-
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-
-    # --- User Inputs ---
-    st.session_state["gender"] = st.selectbox("Gender", ["Male", "Female"], index=0 if st.session_state["gender"] == "Male" else 1)
-    st.session_state["age"] = st.number_input("Age", 1, 120, st.session_state["age"])
-    st.session_state["height"] = st.number_input("Height (cm)", 50, 250, st.session_state["height"])
-    st.session_state["weight"] = st.number_input("Weight (kg)", 20, 200, st.session_state["weight"])
-    st.session_state["duration"] = st.number_input("Workout Duration (minutes)", 1, 300, st.session_state["duration"])
-    st.session_state["heart_rate"] = st.number_input("Heart Rate", 30, 200, st.session_state["heart_rate"])
-    st.session_state["body_temp"] = st.number_input("Body Temperature (°C)", 30.0, 45.0, st.session_state["body_temp"], step=1.0)
-
+    # User Inputs
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    age = st.number_input("Age", min_value=1, max_value=120, value=25)
+    height = st.number_input("Height (cm)", min_value=50, max_value=250, value=170)
+    weight = st.number_input("Weight (kg)", min_value=20, max_value=200, value=70)
+    duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=300, value=30)
+    heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
+    body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
     if st.button("Predict Calories Burned"):
         data = [{
         "Gender": 1 if gender.lower() == "male" else 0,
