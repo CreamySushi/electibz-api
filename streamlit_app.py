@@ -89,9 +89,11 @@ def Show_Main_Screen():
         else:
             st.warning("Could not generate graph due to API errors.")
 
-Show_Main_Screen()
+
 
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
+
+Show_Main_Screen()
