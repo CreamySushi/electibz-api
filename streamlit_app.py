@@ -103,11 +103,11 @@ if "splash_shown" not in st.session_state:
 if not st.session_state.splash_shown:
     splash = st.empty()
     splash.markdown("""
-            <div style='text-align: center; margin-top: 100px;'>
-                <h1>🚀 Welcome to My App</h1>
-                <p>Loading, please wait...</p>
-            </div>
-        """, unsafe_allow_html=True)
-        time.sleep(2)
-        splash.empty()
-        st.session_state.splash_shown = True
+        <div style='text-align: center; margin-top: 100px;'>
+            <h1>🚀 Welcome to My App</h1>
+            <p>Loading, please wait...</p>
+        </div>
+    """, unsafe_allow_html=True)
+    time.sleep(2)
+    splash.empty()
+    st.session_state.splash_shown = True
