@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 
+st.set_page_config(page_title="Calorie Burn Predictor",page_icon="Calories.ico")
 st.title("🔥 Calorie Burn Predictor")
 
 # User Inputs
