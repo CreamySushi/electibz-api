@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 st.title("🔥 Calorie Burn Predictor")
