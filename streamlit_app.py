@@ -1,11 +1,12 @@
 import streamlit as st
 import requests
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 st.title("🔥 Calorie Burn Predictor")
-
+api_url = "https://electibz-api.onrender.com/predict/"
 # User Inputs
-gender = st.selectbox("Gender", ["male", "female"])
+gender = st.selectbox("Gender", ["Male", "Female"])
 age = st.number_input("Age", min_value=1, max_value=120, value=25)
 height = st.number_input("Height (cm)", min_value=50, max_value=250, value=170)
 weight = st.number_input("Weight (kg)", min_value=20, max_value=200, value=70)
@@ -13,9 +14,8 @@ duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=
 heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
 body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
 
-
 if st.button("Predict Calories Burned"):
-    api_url="https://electibz-api.onrender.com/predict/"
+    
     data = [{
     "Gender": 1 if gender.lower() == "male" else 0,
     "Age": age,
@@ -35,16 +35,19 @@ if st.button("Predict Calories Burned"):
         st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
     else:
         st.error(f"Error from API: {response.text}")
-# Graph Feature
+
+
+
+
+
 if st.checkbox("Show Calories vs Duration Graph"):
     st.subheader("📊 Calories Burned vs Workout Duration")
 
     # Range of durations to simulate
     durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
     predictions = []
-    
+
     for d in durations:
-        api_url="https://electibz-api.onrender.com/predict/"
         temp_data = [{
             "Gender": 1 if gender.lower() == "male" else 0,
             "Age": age,
