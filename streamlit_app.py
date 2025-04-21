@@ -99,8 +99,16 @@ if __name__ == "__main__":
 
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
-    st.session_state.splash_shown = False
+        st.session_state.splash_shown = False
 
-if not st.session_state.splash_shown:
-    Show_Splash_Screen()
-    st.session_state.splash_shown = True
+    if not st.session_state.splash_shown:
+        splash = st.empty()
+        splash.markdown("""
+            <div style='text-align: center; margin-top: 100px;'>
+                <h1>🚀 Welcome to My App</h1>
+                <p>Loading, please wait...</p>
+            </div>
+        """, unsafe_allow_html=True)
+        time.sleep(2)
+        splash.empty()
+        st.session_state.splash_shown = True
