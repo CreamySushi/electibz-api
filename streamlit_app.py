@@ -52,7 +52,7 @@ if st.checkbox("Show Calories vs Duration Graph"):
             "Heart_Rate": heart_rate,
             "Body_Temp": body_temp
         }]
-        response = requests.post(api_url, json=temp_data)
+        response = requests.post(api_url ="https://electibz-api.onrender.com/predict/", json=temp_data)
         if response.status_code == 200:
             predictions.append(response.json()["Predicted Calories"][0])
         else:
