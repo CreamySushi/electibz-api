@@ -3,6 +3,7 @@ import requests
 import matplotlib.pyplot as plt
 import time
 
+st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 def show_splash_screen():
     with st.empty():
         st.markdown("""
@@ -13,7 +14,7 @@ def show_splash_screen():
 
 
 def Show_Main_Screen():
-    st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+    
     st.title("🔥 Calorie Burn Predictor")
     api_url = "https://electibz-api.onrender.com/predict/"
     # User Inputs
