@@ -20,6 +20,20 @@ def Show_Main_Screen():
     
     st.title("🔥 Calorie Burn Predictor")
     api_url = "https://electibz-api.onrender.com/predict/"
+
+    defaults = {
+        "gender": "Male",
+        "age": 25,
+        "height": 170,
+        "weight": 70,
+        "duration": 30,
+        "heart_rate": 100,
+        "body_temp": 37.0
+    }
+
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
     
     # User Inputs
     gender = st.selectbox("Gender", ["Male", "Female"])
