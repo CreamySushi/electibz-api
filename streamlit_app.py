@@ -12,7 +12,7 @@ def show_splash_screen():
             <p>Loading, please wait...</p>
         </div>
     """, unsafe_allow_html=True)
-    time.sleep(3)
+    time.sleep(1)
     splash.empty()  # Now it's safe to call empty()
 
 # Show splash screen only once per session
