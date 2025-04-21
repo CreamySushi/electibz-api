@@ -5,17 +5,17 @@ import time
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 def show_splash_screen():
-    with st.empty() as splash:
-        st.markdown("""
-            <div style='text-align: center; margin-top: 100px;'>
-                <h1>🚀 Welcome to My App</h1>
-                <p>Loading, please wait...</p>
-            </div>
-        """, unsafe_allow_html=True)
-        time.sleep(3)
-        splash.empty()
+    splash = st.empty()  # Create placeholder
+    splash.markdown("""
+        <div style='text-align: center; margin-top: 100px;'>
+            <h1>🚀 Welcome to My App</h1>
+            <p>Loading, please wait...</p>
+        </div>
+    """, unsafe_allow_html=True)
+    time.sleep(3)
+    splash.empty()  # Now it's safe to call empty()
 
-# Only show splash screen once per session
+# Show splash screen only once per session
 if "splash_shown" not in st.session_state:
     st.session_state.splash_shown = False
 
