@@ -13,7 +13,7 @@ def Show_Splash_Screen():
             <p>Loading, please wait...</p>
         </div>
     """, unsafe_allow_html=True)
-    time.sleep(1)
+    time.sleep(3)
     splash.empty()
 
 def Show_Main_Screen():
