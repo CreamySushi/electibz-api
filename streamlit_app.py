@@ -5,10 +5,10 @@ import time
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 
-def show_splash_screen():
+def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
-        <div style='text-align: center; margin-top: 100px;'>
+        <div style='text-align: center; margin-top: 200px;'>
             <h1>dawdawfawfaw</h1>
             <p>Loading, please wait...</p>
         </div>
@@ -89,18 +89,18 @@ def Show_Main_Screen():
         else:
             st.warning("Could not generate graph due to API errors.")
 
-def main():
-    show_splash_screen()
+def transition():
+    Show_Splash_Screen()
     st.empty()  # Clear splash screen
     Show_Main_Screen()
 
 if __name__ == "__main__":
-    main()
+    transition()
 
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
     st.session_state.splash_shown = False
 
 if not st.session_state.splash_shown:
-    show_splash_screen()
+    Show_Splash_Screen()
     st.session_state.splash_shown = True
