@@ -100,9 +100,9 @@ transition()
 if "splash_shown" not in st.session_state:
         st.session_state.splash_shown = False
 
-    if not st.session_state.splash_shown:
-        splash = st.empty()
-        splash.markdown("""
+if not st.session_state.splash_shown:
+    splash = st.empty()
+    splash.markdown("""
             <div style='text-align: center; margin-top: 100px;'>
                 <h1>🚀 Welcome to My App</h1>
                 <p>Loading, please wait...</p>
