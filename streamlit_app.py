@@ -3,24 +3,25 @@ import requests
 import matplotlib.pyplot as plt
 import time
 
-st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+st.set_page_config(page_title="Calorie Burn Predictor", page_icon="calories.ico")
 
-def Show_Splash_Screen():
-    splash = st.empty()  
+# SPLASH SCREEN (shown only once)
+def show_splash_screen():
+    splash = st.empty()
     splash.markdown("""
         <div style='text-align: center; margin-top: 200px;'>
-            <h1>dawdawfawfaw</h1>
+            <h1>🚀 Welcome to My App</h1>
             <p>Loading, please wait...</p>
         </div>
     """, unsafe_allow_html=True)
-    time.sleep(3)
+    time.sleep(2)
     splash.empty()
 
-def Show_Main_Screen():
-    
+# MAIN APP UI
+def show_main_screen():
     st.title("🔥 Calorie Burn Predictor")
     api_url = "https://electibz-api.onrender.com/predict/"
-    # User Inputs
+
     gender = st.selectbox("Gender", ["Male", "Female"])
     age = st.number_input("Age", min_value=1, max_value=120, value=25)
     height = st.number_input("Height (cm)", min_value=50, max_value=250, value=170)
@@ -30,18 +31,16 @@ def Show_Main_Screen():
     body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
 
     if st.button("Predict Calories Burned"):
-    
         data = [{
-        "Gender": 1 if gender.lower() == "male" else 0,
-        "Age": age,
-        "Height": height,
-        "Weight": weight,
-        "Duration": duration,
-        "Heart_Rate": heart_rate,
-        "Body_Temp": body_temp
-    }]
+            "Gender": 1 if gender.lower() == "male" else 0,
+            "Age": age,
+            "Height": height,
+            "Weight": weight,
+            "Duration": duration,
+            "Heart_Rate": heart_rate,
+            "Body_Temp": body_temp
+        }]
 
-    
         with st.spinner("Sending data to API..."):
             response = requests.post(api_url, json=data)
 
@@ -51,12 +50,10 @@ def Show_Main_Screen():
         else:
             st.error(f"Error from API: {response.text}")
 
-
     if st.checkbox("Show Calories vs Duration Graph"):
         st.subheader("📊 Calories Burned vs Workout Duration")
 
-        # Range of durations to simulate
-        durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
+        durations = list(range(5, 65, 5))
         predictions = []
 
         for d in durations:
@@ -75,7 +72,6 @@ def Show_Main_Screen():
             else:
                 predictions.append(None)
 
-        # Filter out None values (errors)
         durations = [d for d, p in zip(durations, predictions) if p is not None]
         predictions = [p for p in predictions if p is not None]
 
@@ -89,14 +85,10 @@ def Show_Main_Screen():
         else:
             st.warning("Could not generate graph due to API errors.")
 
-def transition():
-    Show_Splash_Screen()
-    st.empty()  # Clear splash screen
-    Show_Main_Screen()
-
-transition()
-
-# Show splash screen only once per session
+# SESSION STATE CHECK
 if "splash_shown" not in st.session_state:
     show_splash_screen()
     st.session_state.splash_shown = True
+
+# Run main screen after splash
+show_main_screen()
