@@ -13,9 +13,9 @@ duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=
 heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
 body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
 
-api_url = "https://electibz-api.onrender.com/predict/"
+
 if st.button("Predict Calories Burned"):
-    api_url
+    api_url="https://electibz-api.onrender.com/predict/"
     data = [{
     "Gender": 1 if gender.lower() == "male" else 0,
     "Age": age,
@@ -42,8 +42,9 @@ if st.checkbox("Show Calories vs Duration Graph"):
     # Range of durations to simulate
     durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
     predictions = []
-
+    
     for d in durations:
+        api_url="https://electibz-api.onrender.com/predict/"
         temp_data = [{
             "Gender": 1 if gender.lower() == "male" else 0,
             "Age": age,
