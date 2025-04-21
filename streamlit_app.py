@@ -93,5 +93,5 @@ Show_Main_Screen()
 
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
-    show_splash_screen()
+    Show_Splash_Screen()
     st.session_state.splash_shown = True
