@@ -94,8 +94,7 @@ def transition():
     st.empty()  # Clear splash screen
     Show_Main_Screen()
 
-if __name__ == "__main__":
-    transition()
+transition()
 
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
