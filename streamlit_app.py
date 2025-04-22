@@ -8,7 +8,7 @@ st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
-        <div style='text-align: center; margin-top: 150px;'>
+        <div style='text-align: center; margin-top: 250px;'>
             <h1>Welcome to Calories Burn Predictor</h1>
             <p>Loading, please wait...</p>
         </div>
