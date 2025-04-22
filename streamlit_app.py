@@ -9,7 +9,7 @@ def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
         <div style='text-align: center; margin-top: 200px;'>
-            <h1>dawdawfawfaw</h1>
+            <h1>Welcome to Calories Burn Predictor</h1>
             <p>Loading, please wait...</p>
         </div>
     """, unsafe_allow_html=True)
