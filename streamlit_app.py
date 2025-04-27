@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import matplotlib.pyplot as plt
 import time
+import pandas as pd
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 
@@ -20,6 +21,8 @@ def Show_Main_Screen():
     
     st.title("🔥 Calorie Burn Predictor")
     api_url = "https://electibz-api.onrender.com/predict/"
+    if "history" not in st.session_state:
+        st.session_state.history = []
     
     # User Inputs
     gender = st.selectbox("Gender", ["Male", "Female"])
@@ -29,6 +32,7 @@ def Show_Main_Screen():
     duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=300, value=30)
     heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
     body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
+    
     if st.button("Predict Calories Burned"):
         data = [{
         "Gender": 1 if gender.lower() == "male" else 0,
@@ -47,8 +51,28 @@ def Show_Main_Screen():
         if response.status_code == 200:
             prediction = response.json()["Predicted Calories"][0]
             st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
+            # Save to history
+            st.session_state.history.append({
+                "Gender": gender,
+                "Age": age,
+                "Height (cm)": height,
+                "Weight (kg)": weight,
+                "Duration (min)": duration,
+                "Heart Rate": heart_rate,
+                "Body Temp (°C)": body_temp,
+                "Calories Burned": round(prediction, 2)
+        })
         else:
             st.error(f"Error from API: {response.text}")
+            
+        # Show history
+    if st.checkbox("📜 Show Prediction History"):
+        st.subheader("Prediction History")
+        if st.session_state.history:
+            history_df = pd.DataFrame(st.session_state.history)
+            st.dataframe(history_df)
+        else:
+            st.info("No history yet. Predict some calories first!")
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
