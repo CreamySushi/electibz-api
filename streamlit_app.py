@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import time
 import pandas as pd
 import streamlit_authenticator as stauth
+import pickle
+from pathlib import Path
+
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 
 def Show_Splash_Screen():
@@ -16,6 +19,9 @@ def Show_Splash_Screen():
     """, unsafe_allow_html=True)
     time.sleep(3)
     splash.empty()
+
+def Show_Login_Screen():
+    st.
 
 def Show_Main_Screen():
     
