@@ -3,7 +3,7 @@ import requests
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
-
+import streamlit_authenticator as stauth
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 
 def Show_Splash_Screen():
