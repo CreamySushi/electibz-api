@@ -75,9 +75,10 @@ def Show_Splash_Screen():
 def Show_Sign_Up_Screen():
     st.title("📝 Sign Up")
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    password_confirm = st.text_input("Confirm password", type="password")
+    with st.form("signup_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        password_confirm = st.text_input("Confirm password", type="password")
 
     if st.button("Register"):
         if not username or not password or not password_confirm:
@@ -103,8 +104,8 @@ def Show_Sign_Up_Screen():
         
 def Show_Login_Screen():
     st.title("🔐 Login")
-
-     with st.form("login_form"):
+    
+    with st.form("login_form"):
         username = st.text_input("Enter your Username")
         password = st.text_input("Enter your Password", type="password")
 
