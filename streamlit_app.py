@@ -228,11 +228,12 @@ def Show_Main_Screen():
         ''', (st.session_state.username,))
         data = c.fetchall()
 
-        if st.session_state.history:
-            history_df = pd.DataFrame(st.session_state.history)
-            st.dataframe(history_df)
+         if data:
+            df = pd.DataFrame(data, columns=["Gender", "Age", "Height (cm)", "Weight (kg)","Duration (min)", "Heart Rate", "Body Temp (°C)", "Calories Burned"])
+            st.dataframe(df)
         else:
-            st.info("No history yet. Predict some calories first!")
+            st.info("No history found yet.")
+
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
