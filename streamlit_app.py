@@ -237,7 +237,9 @@ def Show_Main_Screen():
 if "splash_shown" not in st.session_state:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
-
+    
+if "show_signup" not in st.session_state:
+    st.session_state.show_signup = False
 # Initialize login session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
