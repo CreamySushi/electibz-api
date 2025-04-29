@@ -11,6 +11,14 @@ st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",
 
 USERS_FILE = Path("users.json")
 
+if USERS_FILE.exists():
+        try:
+            with open(USERS_FILE, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return {}  # Return empty if file is empty or corrupted
+    return {}
+
 # Load users
 def load_users():
     if USERS_FILE.exists():
