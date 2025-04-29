@@ -10,15 +10,19 @@ import bcrypt
 #from pathlib import Path
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
-hide_sidebar_style = """
-    <style>
-        /* Hide the sidebar toggle button */
-        [data-testid="collapsedControl"] {
-            display: none;
-        }
-    </style>
-"""
-st.markdown(hide_sidebar_style, unsafe_allow_html=True)
+
+# Function to hide sidebar toggle
+def hide_sidebar_toggle():
+    st.markdown("""
+        <style>
+            [data-testid="collapsedControl"] {
+                display: none;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+# Then later in your main code, right after your layout or in your screen functions:
+hide_sidebar_toggle()
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
