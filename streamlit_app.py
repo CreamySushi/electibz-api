@@ -113,6 +113,7 @@ def Show_Login_Screen():
             user = c.fetchone()
             if user and bcrypt.checkpw(password.encode(), user[2].encode()):
                 st.session_state.logged_in = True
+                st.session_state.username = username
                 st.success("Login successful!")
                 st.rerun()
             else:
@@ -165,7 +166,12 @@ def Show_Main_Screen():
     api_url = "https://electibz-api.onrender.com/predict/"
     if "history" not in st.session_state:
         st.session_state.history = []
-        
+
+    if "username" not in st.session_state:
+    st.error("No user session found. Please log in again.")
+    st.session_state.logged_in = False
+    st.rerun()
+    
     st.write(f"Logged in as: **{st.session_state.username}**")
     
     if st.button("Logout"):
