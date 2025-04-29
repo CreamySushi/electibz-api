@@ -29,6 +29,8 @@ def hide_sidebar_toggle():
 
 # Then later in your main code, right after your layout or in your screen functions:
 hide_sidebar_toggle()
+
+# Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
 
@@ -42,7 +44,6 @@ c.execute('''
 ''')
 conn.commit()
 
-# Create calorie history table if not exists
 c.execute('''
     CREATE TABLE IF NOT EXISTS history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,37 +59,6 @@ c.execute('''
     )
 ''')
 conn.commit()
-
-
-# Connect to SQLite database
-user_conn = sqlite3.connect('users.db', check_same_thread=False)
-user_cursor = user_conn.cursor()
-
-# Create users table if not exists (to store usernames and hashed passwords)
-user_cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT
-    )
-''')
-user_conn.commit()
-
-user_cursor.execute('''
-    CREATE TABLE IF NOT EXISTS history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        gender TEXT,
-        age INTEGER,
-        height REAL,
-        weight REAL,
-        duration INTEGER,
-        heart_rate INTEGER,
-        body_temp REAL,
-        calories_burned REAL
-    )
-''')
-user_conn.commit()
 
 
 def Show_Splash_Screen():
@@ -105,23 +75,23 @@ def Show_Splash_Screen():
 def Show_Sign_Up_Screen():
     st.title("📝 Sign Up")
 
-    new_username = st.text_input("Username")
-    new_password = st.text_input("Password", type="password")
-    confirm_password = st.text_input("Confirm password", type="password")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    password_confirm = st.text_input("Confirm password", type="password")
 
     if st.button("Register"):
-        if not new_username or not new_password or not confirm_password:
+        if not username or not password or not password_confirm:
             st.warning("Please fill in all fields.")
-        elif new_password != confirm_password:
+        elif password != password_confirm:
             st.error("Passwords do not match.")
         else:
-            user_cursor.execute("SELECT * FROM users WHERE username = ?", (new_username,))
-            if user_cursor.fetchone():
+            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            if c.fetchone():
                 st.error("Username already exists.")
             else:
-                hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                user_cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
-                user_conn.commit()
+                hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+                conn.commit()
                 st.success("Account created! Please log in.")
                 st.session_state.show_signup = False
                 st.session_state.logged_in = False
@@ -139,8 +109,8 @@ def Show_Login_Screen():
 
     if st.button("Login"):
         if username and password:
-            user_cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = user_cursor.fetchone()
+            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            user = c.fetchone()
             if user and bcrypt.checkpw(password.encode(), user[2].encode()):
                 st.session_state.logged_in = True
                 st.success("Login successful!")
@@ -164,20 +134,20 @@ def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
     username = st.text_input("Enter your username")
-    new_password = st.text_input("Enter new password", type="password")
-    confirm_password = st.text_input("Confirm new password", type="password")
+    password = st.text_input("Enter new password", type="password")
+    password_confirm = st.text_input("Confirm new password", type="password")
 
     if st.button("Reset Password"):
-        if not username or not new_password or not confirm_password:
+        if not username or not password or not password_confirm:
             st.error("Please fill in all fields.")
-        elif new_password != confirm_password:
+        elif password != password_confirm:
             st.error("Passwords do not match.")
         else:
-            user_cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-            if user_cursor.fetchone():
-                hashed_pw = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                user_cursor.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
-                user_conn.commit()
+            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            if c.fetchone():
+                hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
+                conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
                 st.rerun()
@@ -288,13 +258,12 @@ def Show_Main_Screen():
 if "splash_shown" not in st.session_state:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
-    
+
+# Initialize login session state
 if "show_signup" not in st.session_state:
     st.session_state.show_signup = False
-# Initialize login session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-
 if "forgot_password" not in st.session_state:
     st.session_state.forgot_password = False
 
