@@ -75,10 +75,9 @@ def Show_Splash_Screen():
 def Show_Sign_Up_Screen():
     st.title("📝 Sign Up")
 
-    with st.form("signup_form"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        password_confirm = st.text_input("Confirm password", type="password")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    password_confirm = st.text_input("Confirm password", type="password")
 
     if st.button("Register"):
         if not username or not password or not password_confirm:
@@ -105,9 +104,8 @@ def Show_Sign_Up_Screen():
 def Show_Login_Screen():
     st.title("🔐 Login")
     
-    with st.form("login_form"):
-        username = st.text_input("Enter your Username")
-        password = st.text_input("Enter your Password", type="password")
+    username = st.text_input("Enter your Username")
+    password = st.text_input("Enter your Password", type="password")
 
     if st.button("Login"):
         if username and password:
@@ -135,10 +133,10 @@ def Show_Login_Screen():
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
-    with st.form("forgot_password_form"):
-        username = st.text_input("Enter your username")
-        password = st.text_input("Enter new password", type="password")
-        password_confirm = st.text_input("Confirm new password", type="password")
+
+    username = st.text_input("Enter your username")
+    password = st.text_input("Enter new password", type="password")
+    password_confirm = st.text_input("Confirm new password", type="password")
 
     if st.button("Reset Password"):
         if not username or not password or not password_confirm:
