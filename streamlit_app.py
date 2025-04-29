@@ -59,6 +59,7 @@ c.execute('''
 ''')
 conn.commit()
 
+
 # Connect to SQLite database
 user_conn = sqlite3.connect('users.db', check_same_thread=False)
 user_cursor = user_conn.cursor()
@@ -69,6 +70,22 @@ user_cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
         password TEXT
+    )
+''')
+user_conn.commit()
+
+user_cursor.execute('''
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        gender TEXT,
+        age INTEGER,
+        height REAL,
+        weight REAL,
+        duration INTEGER,
+        heart_rate INTEGER,
+        body_temp REAL,
+        calories_burned REAL
     )
 ''')
 user_conn.commit()
