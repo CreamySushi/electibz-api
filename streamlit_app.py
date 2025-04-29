@@ -22,8 +22,6 @@ def hide_sidebar_toggle():
             }
         </style>
     """, unsafe_allow_html=True)
-
-# Then later in your main code, right after your layout or in your screen functions:
 hide_sidebar_toggle()
 
 # Connect to SQLite database
@@ -78,6 +76,10 @@ def Show_Sign_Up_Screen():
     if st.button("Register"):
         if not username or not password or not password_confirm:
             st.warning("Please fill in all fields.")
+        elif len(username) < 6:
+            st.error("Username must be at least 6 characters long.")
+        elif len(password) < 6:
+            st.error("Password must be at least 6 characters long.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
         else:
@@ -208,6 +210,15 @@ def Show_Main_Screen():
                 prediction = response.json()["Predicted Calories"][0]
                 st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
 
+                if prediction < 50:
+                    st.info("Your workout was light. Try to add a few more minutes next time to achieve more calorie burn.")
+                elif 50 <= prediction <= 150:
+                   st.success("Good effort! You had a steady workout. Aim for a slightly higher intensity next time.")
+                elif 151 < prediction <= 250:
+                    st.success("Well done! That's a solid calorie burn. Stay consistent!")
+                else:
+                    st.success("Amazing! That was a long session, you're definitely making progress. Keep up the momentum!")
+
                 # Save to database
                 c.execute('''
                     INSERT INTO history (username, gender, age, height, weight, duration, heart_rate, body_temp, calories_burned)
@@ -234,7 +245,6 @@ def Show_Main_Screen():
             st.dataframe(df)
         else:
             st.info("No history found yet.")
-
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
@@ -280,7 +290,7 @@ if "splash_shown" not in st.session_state:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
 
-# Initialize login session state
+# Initialize session state
 if "show_signup" not in st.session_state:
     st.session_state.show_signup = False
 if "logged_in" not in st.session_state:
@@ -299,3 +309,4 @@ else:
         Show_Sign_Up_Screen()
     else:
         Show_Login_Screen()
+
