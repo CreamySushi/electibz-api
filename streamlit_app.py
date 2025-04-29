@@ -74,11 +74,11 @@ def Show_Sign_Up_Screen():
                 conn.commit()
                 st.success("Account created! Please log in.")
                 st.session_state.show_signup = False
-                st.experimental_rerun()
+                st.rerun()
 
     if st.button("Back to Login"):
         st.session_state.show_signup = False
-        st.experimental_rerun()
+        st.rerun()
         
 def Show_Login_Screen():
     st.title("🔐 Login")
@@ -93,7 +93,7 @@ def Show_Login_Screen():
             if user and bcrypt.checkpw(password.encode(), user[2].encode()):
                 st.session_state.logged_in = True
                 st.success("Login successful!")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid username or password.")
         else:
@@ -101,12 +101,12 @@ def Show_Login_Screen():
 
     if st.button("Forgot Password?"):
         st.session_state.forgot_password = True
-        st.experimental_rerun()
+        st.rerun()
 
     st.markdown("Don't have an account?")
     if st.button("Sign Up"):
         st.session_state.show_signup = True
-        st.experimental_rerun()
+        st.rerun()
 
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
@@ -128,13 +128,13 @@ def Show_Forgot_Password_Screen():
                 conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Username not found.")
 
     if st.button("Back to Login"):
         st.session_state.forgot_password = False
-        st.experimental_rerun()
+        st.rerun()
         
 def Show_Main_Screen():
     
