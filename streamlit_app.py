@@ -178,6 +178,7 @@ def Show_Main_Screen():
         st.session_state.logged_in = False
         st.session_state.username = None  # Clear username as well
         st.success("You have been logged out.")
+        st.rerun()
     
     # User Inputs
     gender = st.selectbox("Gender", ["Male", "Female"])
