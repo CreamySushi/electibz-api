@@ -53,20 +53,28 @@ def Show_Splash_Screen():
     splash.empty()
 
 def Show_Sign_Up_Screen():
-    error("Passwords do not match.")
-            else:
-                c.execute("SELECT * FROM users WHERE username = ?", (new_username,))
-                if c.fetchone():
-                    st.error("Username already exists.")
-                else:
-                    hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
-                    conn.commit()
-                    st.success("Account created! Please log in.")
-                    st.session_state.show_signup = False
-                    st.experimental_rerun()
-        else:
+    st.title("📝 Sign Up")
+
+    new_username = st.text_input("Choose a username")
+    new_password = st.text_input("Choose a password", type="password")
+    confirm_password = st.text_input("Confirm password", type="password")
+
+    if st.button("Register"):
+        if not new_username or not new_password or not confirm_password:
             st.warning("Please fill in all fields.")
+        elif new_password != confirm_password:
+            st.error("Passwords do not match.")
+        else:
+            c.execute("SELECT * FROM users WHERE username = ?", (new_username,))
+            if c.fetchone():
+                st.error("Username already exists.")
+            else:
+                hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
+                conn.commit()
+                st.success("Account created! Please log in.")
+                st.session_state.show_signup = False
+                st.experimental_rerun()
 
     if st.button("Back to Login"):
         st.session_state.show_signup = False
@@ -92,10 +100,11 @@ def Show_Login_Screen():
             st.warning("Please fill in all fields.")
 
     if st.button("Forgot Password?"):
-        st.info("Password recovery not implemented yet.")
+        st.session_state.forgot_password = True
+        st.experimental_rerun()
 
-    st.markdown("Don't have an account? [Sign up](#)", unsafe_allow_html=True)
-    if st.button("Go to Sign Up"):
+    st.markdown("Don't have an account?")
+    if st.button("Sign Up"):
         st.session_state.show_signup = True
         st.experimental_rerun()
 
@@ -103,29 +112,29 @@ def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
     username = st.text_input("Enter your username")
-    new_password = st.text_input("Enter your new password", type="password")
+    new_password = st.text_input("Enter new password", type="password")
     confirm_password = st.text_input("Confirm new password", type="password")
-    submit = st.button("Reset Password")
 
-    if submit:
+    if st.button("Reset Password"):
         if not username or not new_password or not confirm_password:
             st.error("Please fill in all fields.")
         elif new_password != confirm_password:
             st.error("Passwords do not match.")
         else:
-            c.execute('SELECT * FROM users WHERE username = ?', (username,))
-            user = c.fetchone()
-            if user:
-                hashed_pw = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-                c.execute('UPDATE users SET password = ? WHERE username = ?', (hashed_pw, username))
+            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            if c.fetchone():
+                hashed_pw = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
                 conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
+                st.experimental_rerun()
             else:
                 st.error("Username not found.")
 
     if st.button("Back to Login"):
         st.session_state.forgot_password = False
+        st.experimental_rerun()
         
 def Show_Main_Screen():
     
