@@ -13,7 +13,7 @@ st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",
 
 # Function to hide sidebar toggle
 def hide_sidebar_toggle():
-    <st.markdown("""
+    st.markdown("""
         <style>
             /* Hide the sidebar completely */
             [data-testid="stSidebar"] {
