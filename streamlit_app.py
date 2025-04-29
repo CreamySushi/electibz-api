@@ -255,7 +255,7 @@ else:
     if st.session_state.forgot_password:
         Show_Forgot_Password_Screen()  # You'll define this function
     elif st.session_state.show_signup:
-        Show_SignUp_Screen()
+        Show_Sign_Up_Screen()
     else:
         page = st.sidebar.selectbox("Choose a page", ["Login", "Sign Up"])
 
