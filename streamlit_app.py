@@ -53,66 +53,51 @@ def Show_Splash_Screen():
     splash.empty()
 
 def Show_Sign_Up_Screen():
-    st.title("📝 Sign Up")
-
-    with st.form("sign_up_form"):
-        username = st.text_input("Enter your username")
-        password = st.text_input("Enter your password", type="password")
-        password_confirm = st.text_input("Confirm your password", type="password")
-        submit = st.form_submit_button("Sign Up")
-
-    if submit:
-        if username and password:
-            if password == password_confirm:
-                # Hash the password using bcrypt
-                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-                # Check if the username already exists
-                c.execute('SELECT * FROM users WHERE username = ?', (username,))
-                user = c.fetchone()
-
-                if user:
-                    st.error("Username already exists. Please choose a different username.")
-                else:
-                    # Insert the new user into the database
-                    c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
-                    conn.commit()
-                    st.success("You have successfully signed up! Please log in.")
-                    
+    error("Passwords do not match.")
             else:
-                st.error("Passwords do not match. Please try again.")
+                c.execute("SELECT * FROM users WHERE username = ?", (new_username,))
+                if c.fetchone():
+                    st.error("Username already exists.")
+                else:
+                    hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+                    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
+                    conn.commit()
+                    st.success("Account created! Please log in.")
+                    st.session_state.show_signup = False
+                    st.experimental_rerun()
         else:
-            st.error("Please fill in both fields.")
+            st.warning("Please fill in all fields.")
 
+    if st.button("Back to Login"):
+        st.session_state.show_signup = False
+        st.experimental_rerun()
+        
 def Show_Login_Screen():
     st.title("🔐 Login")
 
-    with st.form("login_form"):
-        username = st.text_input("Enter your username")
-        password = st.text_input("Enter your password", type="password")
-        submit = st.form_submit_button("Login")
+    username = st.text_input("Enter your username")
+    password = st.text_input("Enter your password", type="password")
 
-    if submit:
+    if st.button("Login"):
         if username and password:
-            c.execute('SELECT * FROM users WHERE username = ?', (username,))
+            c.execute("SELECT * FROM users WHERE username = ?", (username,))
             user = c.fetchone()
-
-            if user:
-                # Assuming user[2] is the hashed password
-                hashed_password = user[2]
-
-                # Check if the password matches the hashed password
-                if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
-                    st.session_state.logged_in = True
-                    st.session_state.username = username
-                    st.success(f"Welcome, {username}!")
-                    # Avoid making unnecessary API requests here, login is handled by local DB
-                else:
-                    st.error("Invalid username or password.")
+            if user and bcrypt.checkpw(password.encode(), user[2].encode()):
+                st.session_state.logged_in = True
+                st.success("Login successful!")
+                st.experimental_rerun()
             else:
-                st.error("User not found.")
+                st.error("Invalid username or password.")
         else:
-            st.error("Please enter a username and password.")
+            st.warning("Please fill in all fields.")
+
+    if st.button("Forgot Password?"):
+        st.info("Password recovery not implemented yet.")
+
+    st.markdown("Don't have an account? [Sign up](#)", unsafe_allow_html=True)
+    if st.button("Go to Sign Up"):
+        st.session_state.show_signup = True
+        st.experimental_rerun()
 
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
