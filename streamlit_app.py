@@ -167,8 +167,8 @@ def Show_Main_Screen():
     api_url = "https://electibz-api.onrender.com/predict/"
     if "history" not in st.session_state:
         st.session_state.history = []
-
-     st.write(f"Logged in as: **{st.session_state.username}**")
+        
+    st.write(f"Logged in as: **{st.session_state.username}**")
     
     if st.button("Logout"):
         st.session_state.logged_in = False
