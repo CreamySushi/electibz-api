@@ -5,11 +5,27 @@ import time
 import pandas as pd
 import sqlite3
 import bcrypt
-
+import json
+from pathlib import Path
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
+USERS_FILE = Path("users.json")
+
+# Load users
+def load_users():
+    if USERS_FILE.exists():
+        with open(USERS_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+# Save users
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f)
+        
 # Function to hide sidebar toggle
 def hide_sidebar_toggle():
+    
     st.markdown("""
         <style>
             /* Hide the sidebar completely */
@@ -76,22 +92,21 @@ def Show_Sign_Up_Screen():
     password_confirm = st.text_input("Confirm password", type="password")
 
     if st.button("Register"):
+        users = load_users()
         if not username or not password or not password_confirm:
             st.warning("Please fill in all fields.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif username in users:
+            st.error("Username already exists.")
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            if c.fetchone():
-                st.error("Username already exists.")
-            else:
-                hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-                conn.commit()
-                st.success("Account created! Please log in.")
-                st.session_state.show_signup = False
-                st.session_state.logged_in = False
-                st.rerun()
+            hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            users[username] = hashed_pw
+            save_users(users)
+            st.success("Account created! Please log in.")
+            st.session_state.show_signup = False
+            st.session_state.logged_in = False
+            st.rerun()
 
     if st.button("Back to Login"):
         st.session_state.show_signup = False
@@ -99,23 +114,19 @@ def Show_Sign_Up_Screen():
         
 def Show_Login_Screen():
     st.title("🔐 Login")
-    
+
     username = st.text_input("Enter your Username")
     password = st.text_input("Enter your Password", type="password")
 
     if st.button("Login"):
-        if username and password:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = c.fetchone()
-            if user and bcrypt.checkpw(password.encode(), user[2].encode()):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.success("Login successful!")
-                st.rerun()
-            else:
-                st.error("Invalid username or password.")
+        users = load_users()
+        if username in users and bcrypt.checkpw(password.encode(), users[username].encode()):
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.success("Login successful!")
+            st.rerun()
         else:
-            st.warning("Please fill in all fields.")
+            st.error("Invalid username or password.")
 
     if st.button("Forgot Password?"):
         st.session_state.forgot_password = True
@@ -130,27 +141,24 @@ def Show_Login_Screen():
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
-
     username = st.text_input("Enter your username")
     password = st.text_input("Enter new password", type="password")
     password_confirm = st.text_input("Confirm new password", type="password")
 
     if st.button("Reset Password"):
+        users = load_users()
         if not username or not password or not password_confirm:
             st.error("Please fill in all fields.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif username in users:
+            users[username] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            save_users(users)
+            st.success("Password reset successfully. Please login.")
+            st.session_state.forgot_password = False
+            st.rerun()
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            if c.fetchone():
-                hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
-                conn.commit()
-                st.success("Password reset successfully. Please login.")
-                st.session_state.forgot_password = False
-                st.rerun()
-            else:
-                st.error("Username not found.")
+            st.error("Username not found.")
 
     if st.button("Back to Login"):
         st.session_state.forgot_password = False
