@@ -257,6 +257,3 @@ else:
             Show_Sign_Up_Screen()
         else:
             Show_Login_Screen()
-
-if st.button("Forgot Password?"):
-    st.session_state.forgot_password = True
