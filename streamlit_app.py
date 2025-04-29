@@ -64,7 +64,7 @@ user_conn = sqlite3.connect('users.db', check_same_thread=False)
 user_cursor = user_conn.cursor()
 
 # Create users table if not exists (to store usernames and hashed passwords)
-c.execute('''
+user_cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
