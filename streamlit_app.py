@@ -9,8 +9,7 @@ import bcrypt
 #import pickle
 #from pathlib import Path
 
-st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
-st.set_page_config(initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
