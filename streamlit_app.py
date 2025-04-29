@@ -3,11 +3,43 @@ import requests
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
-import streamlit_authenticator as stauth
-import pickle
-from pathlib import Path
+import sqlite3
+import bcrypt
+#import streamlit_authenticator as stauth
+#import pickle
+#from pathlib import Path
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+
+# Connect to SQLite database
+conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
+c = conn.cursor()
+
+# Create users table if not exists (to store usernames and hashed passwords)
+c.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+    )
+''')
+conn.commit()
+# Create calorie history table if not exists
+c.execute('''
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        gender TEXT,
+        age INTEGER,
+        height REAL,
+        weight REAL,
+        duration INTEGER,
+        heart_rate INTEGER,
+        body_temp REAL,
+        calories_burned REAL
+    )
+''')
+conn.commit()
 
 def Show_Splash_Screen():
     splash = st.empty()  
@@ -20,9 +52,96 @@ def Show_Splash_Screen():
     time.sleep(3)
     splash.empty()
 
-def Show_Login_Screen():
-    st.
+def Show_Sign_Up_Screen():
+    st.title("📝 Sign Up")
 
+    with st.form("sign_up_form"):
+        username = st.text_input("Enter your username")
+        password = st.text_input("Enter your password", type="password")
+        password_confirm = st.text_input("Confirm your password", type="password")
+        submit = st.form_submit_button("Sign Up")
+
+    if submit:
+        if username and password:
+            if password == password_confirm:
+                # Hash the password using bcrypt
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+                # Check if the username already exists
+                c.execute('SELECT * FROM users WHERE username = ?', (username,))
+                user = c.fetchone()
+
+                if user:
+                    st.error("Username already exists. Please choose a different username.")
+                else:
+                    # Insert the new user into the database
+                    c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+                    conn.commit()
+                    st.success("You have successfully signed up! Please log in.")
+                    
+            else:
+                st.error("Passwords do not match. Please try again.")
+        else:
+            st.error("Please fill in both fields.")
+
+def Show_Login_Screen():
+    st.title("🔐 Login")
+
+    with st.form("login_form"):
+        username = st.text_input("Enter your username")
+        password = st.text_input("Enter your password", type="password")
+        submit = st.form_submit_button("Login")
+
+    if submit:
+        if username and password:
+            c.execute('SELECT * FROM users WHERE username = ?', (username,))
+            user = c.fetchone()
+
+            if user:
+                # Assuming user[2] is the hashed password
+                hashed_password = user[2]
+
+                # Check if the password matches the hashed password
+                if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.success(f"Welcome, {username}!")
+                    # Avoid making unnecessary API requests here, login is handled by local DB
+                else:
+                    st.error("Invalid username or password.")
+            else:
+                st.error("User not found.")
+        else:
+            st.error("Please enter a username and password.")
+
+def Show_Forgot_Password_Screen():
+    st.title("🔑 Forgot Password")
+
+    username = st.text_input("Enter your username")
+    new_password = st.text_input("Enter your new password", type="password")
+    confirm_password = st.text_input("Confirm new password", type="password")
+    submit = st.button("Reset Password")
+
+    if submit:
+        if not username or not new_password or not confirm_password:
+            st.error("Please fill in all fields.")
+        elif new_password != confirm_password:
+            st.error("Passwords do not match.")
+        else:
+            c.execute('SELECT * FROM users WHERE username = ?', (username,))
+            user = c.fetchone()
+            if user:
+                hashed_pw = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                c.execute('UPDATE users SET password = ? WHERE username = ?', (hashed_pw, username))
+                conn.commit()
+                st.success("Password reset successfully. Please login.")
+                st.session_state.forgot_password = False
+            else:
+                st.error("Username not found.")
+
+    if st.button("Back to Login"):
+        st.session_state.forgot_password = False
+        
 def Show_Main_Screen():
     
     st.title("🔥 Calorie Burn Predictor")
@@ -119,10 +238,31 @@ def Show_Main_Screen():
             st.warning("Could not generate graph due to API errors.")
 
 
-
 # Show splash screen only once per session
 if "splash_shown" not in st.session_state:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
 
-Show_Main_Screen()
+# Initialize login session state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "forgot_password" not in st.session_state:
+    st.session_state.forgot_password = False
+
+# Main navigation flow
+if st.session_state.logged_in:
+    Show_Main_Screen()
+else:
+    if st.session_state.forgot_password:
+        Show_Forgot_Password_Screen()  # You'll define this function
+    else:
+        page = st.sidebar.selectbox("Choose a page", ["Login", "Sign Up"])
+
+        if page == "Sign Up":
+            Show_Sign_Up_Screen()
+        else:
+            Show_Login_Screen()
+
+if st.button("Forgot Password?"):
+    st.session_state.forgot_password = True
