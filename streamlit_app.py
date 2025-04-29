@@ -104,8 +104,9 @@ def Show_Sign_Up_Screen():
 def Show_Login_Screen():
     st.title("🔐 Login")
 
-    username = st.text_input("Enter your Username")
-    password = st.text_input("Enter your Password", type="password")
+     with st.form("login_form"):
+        username = st.text_input("Enter your Username")
+        password = st.text_input("Enter your Password", type="password")
 
     if st.button("Login"):
         if username and password:
@@ -133,9 +134,10 @@ def Show_Login_Screen():
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
-    username = st.text_input("Enter your username")
-    password = st.text_input("Enter new password", type="password")
-    password_confirm = st.text_input("Confirm new password", type="password")
+    with st.form("forgot_password_form"):
+        username = st.text_input("Enter your username")
+        password = st.text_input("Enter new password", type="password")
+        password_confirm = st.text_input("Confirm new password", type="password")
 
     if st.button("Reset Password"):
         if not username or not password or not password_confirm:
@@ -164,15 +166,23 @@ def Show_Main_Screen():
     api_url = "https://electibz-api.onrender.com/predict/"
     if "history" not in st.session_state:
         st.session_state.history = []
+
+     st.write(f"Logged in as: **{st.session_state.username}**")
+    
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = None  # Clear username as well
+        st.success("You have been logged out.")
     
     # User Inputs
-    gender = st.selectbox("Gender", ["Male", "Female"])
-    age = st.number_input("Age", min_value=1, max_value=120, value=25)
-    height = st.number_input("Height (cm)", min_value=50, max_value=250, value=170)
-    weight = st.number_input("Weight (kg)", min_value=20, max_value=200, value=70)
-    duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=300, value=30)
-    heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
-    body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
+    with st.form("prediction_form"):
+        gender = st.selectbox("Gender", ["Male", "Female"])
+        age = st.number_input("Age", min_value=1, max_value=120, value=25)
+        height = st.number_input("Height (cm)", min_value=50, max_value=250, value=170)
+        weight = st.number_input("Weight (kg)", min_value=20, max_value=200, value=70)
+        duration = st.number_input("Workout Duration (minutes)", min_value=1, max_value=300, value=30)
+        heart_rate = st.number_input("Heart Rate", min_value=30, max_value=200, value=100)
+        body_temp = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, value=37.0, step=1.0)
     
     if st.button("Predict Calories Burned"):
         data = [{
@@ -187,24 +197,22 @@ def Show_Main_Screen():
 
     
         with st.spinner("Sending data to API..."):
-            response = requests.post(api_url, json=data)
+            try:
+                response = requests.post(api_url, json=data, timeout=10)
+                response.raise_for_status()  # Raise an error for bad status
+                prediction = response.json()["Predicted Calories"][0]
+                st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
 
-        if response.status_code == 200:
-            prediction = response.json()["Predicted Calories"][0]
-            st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
-            # Save to history
-            st.session_state.history.append({
-                "Gender": gender,
-                "Age": age,
-                "Height (cm)": height,
-                "Weight (kg)": weight,
-                "Duration (min)": duration,
-                "Heart Rate": heart_rate,
-                "Body Temp (°C)": body_temp,
-                "Calories Burned": round(prediction, 2)
-        })
-        else:
-            st.error(f"Error from API: {response.text}")
+                # Save to database
+                c.execute('''
+                    INSERT INTO history (username, gender, age, height, weight, duration, heart_rate, body_temp, calories_burned)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (st.session_state.username, gender, age, height, weight, duration, heart_rate, body_temp, round(prediction, 2)))
+                conn.commit()
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"API Error: {e}")
+
             
         # Show history
     if st.checkbox("📜 Show Prediction History"):
