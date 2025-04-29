@@ -75,6 +75,7 @@ def Show_Sign_Up_Screen():
                 conn.commit()
                 st.success("Account created! Please log in.")
                 st.session_state.show_signup = False
+                st.session_state.logged_in = False
                 st.rerun()
 
     if st.button("Back to Login"):
@@ -261,6 +262,8 @@ else:
         page = st.sidebar.selectbox("Choose a page", ["Login", "Sign Up"])
 
         if page == "Sign Up":
-            Show_Sign_Up_Screen()
+            st.session_state.show_signup = True
+            st.session_state.logged_in = False
+            st.rerun()
         else:
             Show_Login_Screen()
