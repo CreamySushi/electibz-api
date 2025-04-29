@@ -6,10 +6,6 @@ import pandas as pd
 import sqlite3
 import bcrypt
 
-import streamlit_authenticator as stauth
-import pickle
-from pathlib import Path
-
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
 # Function to hide sidebar toggle
