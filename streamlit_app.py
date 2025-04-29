@@ -298,11 +298,4 @@ else:
     elif st.session_state.show_signup:
         Show_Sign_Up_Screen()
     else:
-        page = st.sidebar.selectbox("Choose a page", ["Login", "Sign Up"])
-
-        if page == "Sign Up":
-            st.session_state.show_signup = True
-            st.session_state.logged_in = False
-            st.rerun()
-        else:
-            Show_Login_Screen()
+        Show_Login_Screen()
