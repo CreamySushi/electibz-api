@@ -244,7 +244,7 @@ if "logged_in" not in st.session_state:
 
 if "forgot_password" not in st.session_state:
     st.session_state.forgot_password = False
-if
+
 
 # Main navigation flow
 if st.session_state.logged_in:
