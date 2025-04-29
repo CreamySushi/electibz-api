@@ -13,13 +13,18 @@ st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",
 
 # Function to hide sidebar toggle
 def hide_sidebar_toggle():
-    st.markdown("""
+    <st.markdown("""
         <style>
+            /* Hide the sidebar completely */
+            [data-testid="stSidebar"] {
+                display: none !important;
+            }
+            /* Hide the sidebar toggle button */
             [data-testid="collapsedControl"] {
-                display: none;
+                display: none !important;
             }
         </style>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True
 
 # Then later in your main code, right after your layout or in your screen functions:
 hide_sidebar_toggle()
