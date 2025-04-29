@@ -106,7 +106,7 @@ def Show_Login_Screen():
     st.markdown("Don't have an account?")
     if st.button("Sign Up"):
         st.session_state.show_signup = True
-        Show_SignUp_Screen()
+        st.session_state.logged_in = False
         st.rerun()
 
 def Show_Forgot_Password_Screen():
@@ -244,6 +244,7 @@ if "logged_in" not in st.session_state:
 
 if "forgot_password" not in st.session_state:
     st.session_state.forgot_password = False
+if
 
 # Main navigation flow
 if st.session_state.logged_in:
@@ -251,6 +252,8 @@ if st.session_state.logged_in:
 else:
     if st.session_state.forgot_password:
         Show_Forgot_Password_Screen()  # You'll define this function
+    elif st.session_state.show_signup:
+        Show_SignUp_Screen(
     else:
         page = st.sidebar.selectbox("Choose a page", ["Login", "Sign Up"])
 
