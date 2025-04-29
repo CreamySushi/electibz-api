@@ -228,7 +228,7 @@ def Show_Main_Screen():
         ''', (st.session_state.username,))
         data = c.fetchall()
 
-         if data:
+        if data:
             df = pd.DataFrame(data, columns=["Gender", "Age", "Height (cm)", "Weight (kg)","Duration (min)", "Heart Rate", "Body Temp (°C)", "Calories Burned"])
             st.dataframe(df)
         else:
