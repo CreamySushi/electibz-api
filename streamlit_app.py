@@ -29,9 +29,7 @@ def hide_sidebar_toggle():
 
 # Then later in your main code, right after your layout or in your screen functions:
 hide_sidebar_toggle()
-
-# Connect to SQLite database
-conn = sqlite3.connect('users.db', check_same_thread=False)
+conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
 
 # Create users table if not exists (to store usernames and hashed passwords)
@@ -43,6 +41,7 @@ c.execute('''
     )
 ''')
 conn.commit()
+
 # Create calorie history table if not exists
 c.execute('''
     CREATE TABLE IF NOT EXISTS history (
@@ -59,6 +58,21 @@ c.execute('''
     )
 ''')
 conn.commit()
+
+# Connect to SQLite database
+user_conn = sqlite3.connect('users.db', check_same_thread=False)
+user_cursor = user_conn.cursor()
+
+# Create users table if not exists (to store usernames and hashed passwords)
+c.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+    )
+''')
+user_conn.commit()
+
 
 def Show_Splash_Screen():
     splash = st.empty()  
@@ -84,13 +98,13 @@ def Show_Sign_Up_Screen():
         elif new_password != confirm_password:
             st.error("Passwords do not match.")
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (new_username,))
-            if c.fetchone():
+            user_cursor.execute("SELECT * FROM users WHERE username = ?", (new_username,))
+            if user_cursor.fetchone():
                 st.error("Username already exists.")
             else:
                 hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
-                conn.commit()
+                user_cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (new_username, hashed))
+                user_conn.commit()
                 st.success("Account created! Please log in.")
                 st.session_state.show_signup = False
                 st.session_state.logged_in = False
@@ -108,8 +122,8 @@ def Show_Login_Screen():
 
     if st.button("Login"):
         if username and password:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = c.fetchone()
+            user_cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+            user = user_cursor.fetchone()
             if user and bcrypt.checkpw(password.encode(), user[2].encode()):
                 st.session_state.logged_in = True
                 st.success("Login successful!")
@@ -142,11 +156,11 @@ def Show_Forgot_Password_Screen():
         elif new_password != confirm_password:
             st.error("Passwords do not match.")
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            if c.fetchone():
+            user_cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+            if user_cursor.fetchone():
                 hashed_pw = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
-                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
-                conn.commit()
+                user_cursor.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
+                user_conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
                 st.rerun()
