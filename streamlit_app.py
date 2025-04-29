@@ -30,7 +30,7 @@ def hide_sidebar_toggle():
 hide_sidebar_toggle()
 
 # Connect to SQLite database
-conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
+conn = sqlite3.connect('users.db', check_same_thread=False)
 c = conn.cursor()
 
 # Create users table if not exists (to store usernames and hashed passwords)
