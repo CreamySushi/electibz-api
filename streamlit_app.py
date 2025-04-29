@@ -209,6 +209,13 @@ def Show_Main_Screen():
         # Show history
     if st.checkbox("📜 Show Prediction History"):
         st.subheader("Prediction History")
+
+        c.execute('''
+            SELECT gender, age, height, weight, duration, heart_rate, body_temp, calories_burned
+            FROM history WHERE username = ?
+        ''', (st.session_state.username,))
+        data = c.fetchall()
+
         if st.session_state.history:
             history_df = pd.DataFrame(st.session_state.history)
             st.dataframe(history_df)
