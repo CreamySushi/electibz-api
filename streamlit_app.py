@@ -24,7 +24,7 @@ def hide_sidebar_toggle():
                 display: none !important;
             }
         </style>
-    """, unsafe_allow_html=True
+    """, unsafe_allow_html=True)
 
 # Then later in your main code, right after your layout or in your screen functions:
 hide_sidebar_toggle()
