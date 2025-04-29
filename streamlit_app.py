@@ -55,8 +55,8 @@ def Show_Splash_Screen():
 def Show_Sign_Up_Screen():
     st.title("📝 Sign Up")
 
-    new_username = st.text_input("Choose a username")
-    new_password = st.text_input("Choose a password", type="password")
+    new_username = st.text_input("Username")
+    new_password = st.text_input("Password", type="password")
     confirm_password = st.text_input("Confirm password", type="password")
 
     if st.button("Register"):
@@ -83,8 +83,8 @@ def Show_Sign_Up_Screen():
 def Show_Login_Screen():
     st.title("🔐 Login")
 
-    username = st.text_input("Enter your username")
-    password = st.text_input("Enter your password", type="password")
+    username = st.text_input("Enter your Username")
+    password = st.text_input("Enter your Password", type="password")
 
     if st.button("Login"):
         if username and password:
@@ -106,6 +106,7 @@ def Show_Login_Screen():
     st.markdown("Don't have an account?")
     if st.button("Sign Up"):
         st.session_state.show_signup = True
+        Show_SignUp_Screen()
         st.rerun()
 
 def Show_Forgot_Password_Screen():
