@@ -177,6 +177,10 @@ def Show_Main_Screen():
     if st.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = None  # Clear username as well
+        conn.commit()
+        c.execute("SELECT username FROM users")
+        users = c.fetchall()
+        st.write("All users in DB:", users)
         st.success("You have been logged out.")
         st.rerun()
     
