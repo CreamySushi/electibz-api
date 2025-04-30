@@ -5,34 +5,36 @@ import time
 import pandas as pd
 import sqlite3
 import bcrypt
+import re
 
-st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
-# Function to hide sidebar toggle
-def hide_sidebar_toggle():
-    st.markdown("""
-        <style>
-            /* Hide the sidebar completely */
-            [data-testid="stSidebar"] {
-                display: none !important;
-            }
-            /* Hide the sidebar toggle button */
-            [data-testid="collapsedControl"] {
-                display: none !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-hide_sidebar_toggle()
+st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+
+# Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "show_signup" not in st.session_state:
+    st.session_state.show_signup = False
+if "forgot_password" not in st.session_state:
+    st.session_state.forgot_password = False
+if "splash_shown" not in st.session_state:
+    st.session_state.splash_shown = False
+if "email" not in st.session_state:
+    st.session_state.email = None
+
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
 
-# Create users table if not exists (to store usernames and hashed passwords)
+# Create users table if not exists
 c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
+        email TEXT UNIQUE,
         password TEXT
     )
 ''')
@@ -54,6 +56,63 @@ c.execute('''
 ''')
 conn.commit()
 
+#Styling Sidebar buttons
+st.markdown("""
+    <style> 
+        section[data-testid="stSidebar"] div.stButton > button {
+            background: none !important;
+            border: none !important;
+            padding: 0.25rem 0 !important;
+            font-size: inherit !important;
+            color: #FFFFFF !important;
+            text-align: left !important;
+            font-weight: Bold !important;
+            cursor: pointer;
+        }
+
+        section[data-testid="stSidebar"] div.stButton > button > div {
+            font-size: 2rem !important;
+            font-weight: Bold !important
+        }
+
+        section[data-testid="stSidebar"] div.stButton {
+            margin-bottom: 0.25rem;
+        }
+
+        section[data-testid="stSidebar"] {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        section[data-testid="stSidebar"] > div.stButton:last-child {
+            margin-top: auto;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+with st.sidebar:
+    if st.session_state.logged_in:
+        st.button(f"👤 {st.session_state.username}")
+        st.markdown("---")
+        st.button("🏠 Home")
+        st.button("⚙️ Settings")
+        if st.button("🚪 Logout"):
+            st.session_state.logged_in = False
+            st.session_state.username = None
+            conn.commit()
+            st.success("You have been logged out.")
+            st.rerun()
+        
+        st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+        st.button("ℹ️ About Us")
+        st.button("🆘 Help Center")
+        
+
+    else:
+        st.button("ℹ️ About Us")
+        st.button("🆘 Help Center")
+        
+
 
 def Show_Splash_Screen():
     splash = st.empty()  
@@ -70,54 +129,113 @@ def Show_Sign_Up_Screen():
     st.title("📝 Sign Up")
 
     username = st.text_input("Username")
+    email = st.text_input("Email", placeholder="username@gmail.com")
     password = st.text_input("Password", type="password")
     password_confirm = st.text_input("Confirm password", type="password")
 
+    # Check for email format like @something.com
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+
     if st.button("Register"):
-        if not username or not password or not password_confirm:
+        if not email or not password or not password_confirm or not username:
             st.warning("Please fill in all fields.")
-        elif len(username) < 6:
-            st.error("Username must be at least 6 characters long.")
+        elif len(email) < 6:
+            st.error("Email must be at least 6 characters long.")
         elif len(password) < 6:
             st.error("Password must be at least 6 characters long.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif email == username:
+            st.error("Email and Username must be different.")
+        elif not re.match(email_regex, email):
+            st.error("Email must be in the format 'username@something.com'.")
         else:
+            # Check if username already exists
             c.execute("SELECT * FROM users WHERE username = ?", (username,))
             if c.fetchone():
                 st.error("Username already exists.")
             else:
-                hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-                conn.commit()
-                st.success("Account created! Please log in.")
-                st.session_state.show_signup = False
-                st.session_state.logged_in = False
-                st.rerun()
+                # Check if email is already used
+                c.execute("SELECT * FROM users WHERE email = ?", (email,))
+                if c.fetchone():
+                    st.error("Email is already registered.")
+                else:
+                    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                    c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, hashed_password))
+                    conn.commit()
+                    st.success("Account created! Please log in.")
+                    st.session_state.show_signup = False
+                    st.session_state.username = None
+                    st.session_state.email = None
+                    st.rerun()
 
     if st.button("Back to Login"):
         st.session_state.show_signup = False
         st.rerun()
-        
+                
 def Show_Login_Screen():
     st.title("🔐 Login")
     
-    username = st.text_input("Enter your Username")
-    password = st.text_input("Enter your Password", type="password")
+    with st.form(clear_on_submit=False, key="login-form"):
+        email = st.text_input("Email", placeholder="username@gmail.com")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login")
 
-    if st.button("Login"):
-        if username and password:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = c.fetchone()
-            if user and bcrypt.checkpw(password.encode(), user[2].encode()):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.success("Login successful!")
-                st.rerun()
+        if submitted:
+            if email and password:
+                c.execute("SELECT * FROM users WHERE email = ?", (email,))
+                user = c.fetchone()
+
+                if user and bcrypt.checkpw(password.encode(), user[3].encode()):
+                    st.session_state.logged_in = True
+                    st.session_state.username = user[1]
+                    st.session_state.email = user[2] 
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    st.error("Invalid email or password.")
             else:
-                st.error("Invalid username or password.")
-        else:
-            st.warning("Please fill in all fields.")
+                st.warning("Please fill in both fields.")
+
+    st.markdown("""
+        <style>
+            /* Remove form container shadow and round corners */
+            div[data-testid="stForm"] {
+                background-color: transparent;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            /* "Forgot Password" button styling */
+            .stButton[id="forgot-password-button"] > button {
+                width: auto;
+                text-align: left;
+                padding-left: 0;
+                font-weight: normal;
+                margin-top: 10px;
+            }
+
+            /* Buttons alignment and spacing */
+            .stform[id="login-form"], .stButton[id="forgot-password-button"] {
+                width: auto;
+                display: inline-block;
+            }
+
+            /* "Sign Up" button spacing */
+            .stButton[id="signup-button"] {
+                margin-top: 20px !important;
+            }
+
+            /* Text styling */
+            .stText {
+                font-size: 14px;
+                margin-top: 0.25rem;
+                text-align: center;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 
     if st.button("Forgot Password?"):
         st.session_state.forgot_password = True
@@ -132,31 +250,36 @@ def Show_Login_Screen():
 def Show_Forgot_Password_Screen():
     st.title("🔑 Forgot Password")
 
-
-    username = st.text_input("Enter your username")
+    email = st.text_input("Enter your email", placeholder="username@gmail.com")
     password = st.text_input("Enter new password", type="password")
     password_confirm = st.text_input("Confirm new password", type="password")
 
+    # Check for email format like @something.com
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+
     if st.button("Reset Password"):
-        if not username or not password or not password_confirm:
+        if not email or not password or not password_confirm:
             st.error("Please fill in all fields.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif not re.match(email_regex, email):
+            st.error("Email must be in the format 'username@gmail.com'.")
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            c.execute("SELECT * FROM users WHERE email = ?", (email,))
             if c.fetchone():
                 hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
+                c.execute("UPDATE users SET password = ? WHERE email = ?", (hashed_pw, email))
                 conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
                 st.rerun()
             else:
-                st.error("Username not found.")
+                st.error("Email not found.")
 
     if st.button("Back to Login"):
         st.session_state.forgot_password = False
         st.rerun()
+
         
 def Show_Main_Screen():
     
@@ -168,18 +291,6 @@ def Show_Main_Screen():
     if "username" not in st.session_state:
         st.error("No user session found. Please log in again.")
         st.session_state.logged_in = False
-        st.rerun()
-    
-    st.write(f"Logged in as: **{st.session_state.username}**")
-    
-    if st.button("Logout"):
-        st.session_state.logged_in = False
-        st.session_state.username = None  # Clear username as well
-        conn.commit()
-        c.execute("SELECT username FROM users")
-        users = c.fetchall()
-        st.write("All users in DB:", users)
-        st.success("You have been logged out.")
         st.rerun()
     
     # User Inputs
@@ -209,7 +320,7 @@ def Show_Main_Screen():
                 response.raise_for_status()  # Raise an error for bad status
                 prediction = response.json()["Predicted Calories"][0]
                 st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
-
+ 
                 if prediction < 50:
                     st.info("Your workout was light. Try to add a few more minutes next time to achieve more calorie burn.")
                 elif 50 <= prediction <= 150:
@@ -283,21 +394,6 @@ def Show_Main_Screen():
             st.pyplot(fig)
         else:
             st.warning("Could not generate graph due to API errors.")
-
-
-# Show splash screen only once per session
-if "splash_shown" not in st.session_state:
-    Show_Splash_Screen()
-    st.session_state.splash_shown = True
-
-# Initialize session state
-if "show_signup" not in st.session_state:
-    st.session_state.show_signup = False
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "forgot_password" not in st.session_state:
-    st.session_state.forgot_password = False
-
 
 # Main navigation flow
 if st.session_state.logged_in:
