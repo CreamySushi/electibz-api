@@ -25,6 +25,29 @@ if "splash_shown" not in st.session_state:
 if "email" not in st.session_state:
     st.session_state.email = None
 
+background_image = """
+<style>
+/* Apply to the whole background */
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://t3.ftcdn.net/jpg/04/29/35/62/360_F_429356296_CVQ5LkC6Pl55kUNLqLisVKgTw9vjyif1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+/* Make main container background transparent */
+[data-testid="stAppViewContainer"] > .main {
+    background-color: rgba(0,0,0,0);
+}
+
+/* Optional: make sidebar transparent too */
+[data-testid="stSidebar"] {
+    background-color: rgba(0,0,0,0.6);
+}
+</style>
+"""
+st.markdown(background_image, unsafe_allow_html=True)
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
@@ -103,7 +126,7 @@ def Show_Splash_Screen():
     splash.empty()
 
 def Show_Sign_Up_Screen():
-    st.title("📝 Sign Up")
+    st.title("Sign Up")
 
     username = st.text_input("Username")
     email = st.text_input("Email", placeholder="username@gmail.com")
@@ -151,7 +174,7 @@ def Show_Sign_Up_Screen():
         st.rerun()
                 
 def Show_Login_Screen():
-    st.title("🔐 Login")
+    st.title("Login")
     
     with st.form(clear_on_submit=False, key="login-form"):
         email = st.text_input("Email", placeholder="username@gmail.com")
