@@ -6,9 +6,25 @@ import pandas as pd
 import sqlite3
 import bcrypt
 import re
+import base64
 
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+
+# Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "show_signup" not in st.session_state:
+    st.session_state.show_signup = False
+if "forgot_password" not in st.session_state:
+    st.session_state.forgot_password = False
+if "splash_shown" not in st.session_state:
+    st.session_state.splash_shown = False
+if "email" not in st.session_state:
+    st.session_state.email = None
+
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
@@ -356,16 +372,6 @@ def Show_Main_Screen():
             st.warning("Could not generate graph due to API errors.")
 
 # Main navigation flow
-            
-if st.session_state.logged_in:
-    Show_Main_Screen()
-else:
-    if st.session_state.forgot_password:
-        Show_Forgot_Password_Screen()
-    elif st.session_state.show_signup:
-        Show_Sign_Up_Screen()
-    else:
-        Show_Login_Screen()
 if not st.session_state.splash_shown:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
@@ -392,6 +398,8 @@ else:
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
+        
+
         else:
             if st.button("ℹ️ About Us"):
                 st.write("Recto Leader")
@@ -399,17 +407,13 @@ else:
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
-
-# Initialize session state variables
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "username" not in st.session_state:
-    st.session_state.username = None
-if "show_signup" not in st.session_state:
-    st.session_state.show_signup = False
-if "forgot_password" not in st.session_state:
-    st.session_state.forgot_password = False
-if "splash_shown" not in st.session_state:
-    st.session_state.splash_shown = False
-if "email" not in st.session_state:
-    st.session_state.email = None
+            
+if st.session_state.logged_in:
+    Show_Main_Screen()
+else:
+    if st.session_state.forgot_password:
+        Show_Forgot_Password_Screen()
+    elif st.session_state.show_signup:
+        Show_Sign_Up_Screen()
+    else:
+        Show_Login_Screen()
