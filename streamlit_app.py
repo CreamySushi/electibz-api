@@ -392,8 +392,6 @@ else:
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
-        
-
         else:
             if st.button("ℹ️ About Us"):
                 st.write("Recto Leader")
