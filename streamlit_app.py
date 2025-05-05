@@ -117,7 +117,7 @@ with st.sidebar:
         if st.button("ℹ️ About Us"):
             st.write("Recto Leader")
         if st.button("🆘 Help Center"):
-            url = "https://www.tiktok.com/@jenrick1232"
+            url = "https://www.facebook.com/return2monke"
             st.write("Contact Us")
             st.write("[Recto, Rainer](%s)" % url)
         
