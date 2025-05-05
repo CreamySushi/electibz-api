@@ -6,7 +6,6 @@ import pandas as pd
 import sqlite3
 import bcrypt
 import re
-import base64
 
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
@@ -27,7 +26,6 @@ if "email" not in st.session_state:
 
 background_image = """
 <style>
-/* Apply to the whole background */
 [data-testid="stAppViewContainer"] {
     background-image: url("https://t3.ftcdn.net/jpg/04/29/35/62/360_F_429356296_CVQ5LkC6Pl55kUNLqLisVKgTw9vjyif1.jpg");
     background-size: cover;
@@ -41,7 +39,7 @@ background_image = """
     background-color: rgba(0,0,0,0);
 }
 
-/* Optional: make sidebar transparent too */
+/*Make sidebar transparent */
 [data-testid="stSidebar"] {
     background-color: rgba(0,0,0,0.6);
 }
