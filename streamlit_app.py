@@ -104,13 +104,20 @@ with st.sidebar:
             st.rerun()
         
         st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-        st.button("ℹ️ About Us")
-        st.button("🆘 Help Center")
+        if st.button("ℹ️ About Us"):
+            st.write("Recto Leader")
         
+        if st.button("🆘 Help Center"):
+            url = "https://mail.google.com/mail/mu/mp/892/#tl/priority/%5Esmartlabel_personal"
+            st.write("Contact Us [link](%s)" % url)
+    
 
     else:
-        st.button("ℹ️ About Us")
-        st.button("🆘 Help Center")
+        if st.button("ℹ️ About Us"):
+            st.write("Recto Leader")
+        if st.button("🆘 Help Center"):
+            url = "https://mail.google.com/mail/mu/mp/892/#tl/priority/%5Esmartlabel_personal"
+            st.write("Contact Us [link](%s)" % url)
         
 
 
@@ -178,7 +185,7 @@ def Show_Login_Screen():
     
     with st.form(clear_on_submit=False, key="login-form"):
         email = st.text_input("Email", placeholder="username@gmail.com")
-        password = st.text_input("Password", type="password")
+        password = st.text_input("Password", type="password", placeholder=”Password must be at least 6 characters long”)
         submitted = st.form_submit_button("Login")
 
         if submitted:
