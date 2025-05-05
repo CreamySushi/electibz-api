@@ -108,16 +108,18 @@ with st.sidebar:
             st.write("Recto Leader")
         
         if st.button("🆘 Help Center"):
-            url = "https://mail.google.com/mail/mu/mp/892/#tl/priority/%5Esmartlabel_personal"
-            st.write("Contact Us [link](%s)" % url)
+            url = "https://www.facebook.com/return2monke"
+            st.write("Contact Us")
+            st.write("[Recto, Rainer](%s)" % url)
     
 
     else:
         if st.button("ℹ️ About Us"):
             st.write("Recto Leader")
         if st.button("🆘 Help Center"):
-            url = "https://mail.google.com/mail/mu/mp/892/#tl/priority/%5Esmartlabel_personal"
-            st.write("Contact Us [link](%s)" % url)
+            url = "https://www.tiktok.com/@jenrick1232"
+            st.write("Contact Us")
+            st.write("[Recto, Rainer](%s)" % url)
         
 
 
