@@ -254,7 +254,7 @@ def Show_Login_Screen():
         st.rerun()
 
 def Show_Forgot_Password_Screen():
-    st.title("🔑 Forgot Password")
+    st.title("Forgot Password")
 
     email = st.text_input("Enter your email", placeholder="username@gmail.com")
     password = st.text_input("Enter new password", type="password")
@@ -364,7 +364,7 @@ def Show_Main_Screen():
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
-        st.subheader("📊 Calories Burned vs Workout Duration")
+        st.subheader("Calories Burned vs Workout Duration")
 
         # Range of durations to simulate
         durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
@@ -421,19 +421,19 @@ else:
                 st.rerun()
             
             st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-            if st.button("ℹ️ About Us"):
+            if st.button("ℹ About Us"):
                 st.write("Recto Leader")
             
-            if st.button("🆘 Help Center"):
+            if st.button("? Help Center"):
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
         
 
         else:
-            if st.button("ℹ️ About Us"):
-                st.write("Recto Leader")
-            if st.button("🆘 Help Center"):
+            if st.button("ℹ  About Us"):
+                st.write(" Recto Leader")
+            if st.button("? Help Center"):
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
