@@ -185,7 +185,7 @@ def Show_Login_Screen():
     
     with st.form(clear_on_submit=False, key="login-form"):
         email = st.text_input("Email", placeholder="username@gmail.com")
-        password = st.text_input("Password", type="password", placeholder=”Password must be at least 6 characters long”)
+        password = st.text_input("Password", type="password", placeholder="Password must be at least 6 characters long")
         submitted = st.form_submit_button("Login")
 
         if submitted:
@@ -412,4 +412,3 @@ else:
         Show_Sign_Up_Screen()
     else:
         Show_Login_Screen()
-
