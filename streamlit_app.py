@@ -8,7 +8,7 @@ import bcrypt
 import re
 
 
-st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
+st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
 # Initialize session state variables
 if "logged_in" not in st.session_state:
@@ -46,6 +46,14 @@ background_image = """
 </style>
 """
 st.markdown(background_image, unsafe_allow_html=True)
+
+hide_streamlit_style = """
+    <style>
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
@@ -405,13 +413,11 @@ else:
         if st.session_state.logged_in:
             st.button(f"👤 {st.session_state.username}")
             st.markdown("---")
-            st.button("🏠 Home")
-            st.button("⚙️ Settings")
+            st.button("🏠 Home")                
             if st.button("🚪 Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
                 conn.commit()
-                st.success("You have been logged out.")
                 st.rerun()
             
             st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
