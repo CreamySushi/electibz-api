@@ -383,11 +383,14 @@ def Show_Main_Screen():
         predictions = [p for p in predictions if p is not None]
 
         if predictions:
-            fig, ax = plt.subplots()
-            ax.plot(durations, predictions, marker='o')
-            ax.set_xlabel("Duration (minutes)")
-            ax.set_ylabel("Calories Burned")
-            ax.set_title("Calories Burned vs Workout Duration")
+            fig, ax = plt.subplots(facecolor="#1e1e1e")
+            ax.plot(durations, predictions, marker='o', color="#00ff99")
+            ax.set_facecolor("#2b2b2b")  
+            ax.tick_params(colors='white')
+            ax.xaxis.label.set_color('white')
+            ax.yaxis.label.set_color('white')
+            ax.title.set_color('white')      
+            ax.grid(True, linestyle='--', alpha=0.3)
             st.pyplot(fig)
         else:
             st.warning("Could not generate graph due to API errors.")
