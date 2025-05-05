@@ -10,21 +10,6 @@ import re
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico")
 
-# Initialize session state variables
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "username" not in st.session_state:
-    st.session_state.username = None
-if "show_signup" not in st.session_state:
-    st.session_state.show_signup = False
-if "forgot_password" not in st.session_state:
-    st.session_state.forgot_password = False
-if "splash_shown" not in st.session_state:
-    st.session_state.splash_shown = False
-if "email" not in st.session_state:
-    st.session_state.email = None
-
-
 # Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
@@ -89,40 +74,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
-with st.sidebar:
-    if st.session_state.logged_in:
-        st.button(f"👤 {st.session_state.username}")
-        st.markdown("---")
-        st.button("🏠 Home")
-        st.button("⚙️ Settings")
-        if st.button("🚪 Logout"):
-            st.session_state.logged_in = False
-            st.session_state.username = None
-            conn.commit()
-            st.success("You have been logged out.")
-            st.rerun()
-        
-        st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-        if st.button("ℹ️ About Us"):
-            st.write("Recto Leader")
-        
-        if st.button("🆘 Help Center"):
-            url = "https://www.facebook.com/return2monke"
-            st.write("Contact Us")
-            st.write("[Recto, Rainer](%s)" % url)
-    
-
-    else:
-        if st.button("ℹ️ About Us"):
-            st.write("Recto Leader")
-        if st.button("🆘 Help Center"):
-            url = "https://www.facebook.com/return2monke"
-            st.write("Contact Us")
-            st.write("[Recto, Rainer](%s)" % url)
-        
-
-
+                
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
@@ -289,7 +241,6 @@ def Show_Forgot_Password_Screen():
         st.session_state.forgot_password = False
         st.rerun()
 
-        
 def Show_Main_Screen():
     
     st.title("🔥 Calorie Burn Predictor")
@@ -405,12 +356,62 @@ def Show_Main_Screen():
             st.warning("Could not generate graph due to API errors.")
 
 # Main navigation flow
+            
 if st.session_state.logged_in:
     Show_Main_Screen()
 else:
     if st.session_state.forgot_password:
-        Show_Forgot_Password_Screen()  # You'll define this function
+        Show_Forgot_Password_Screen()
     elif st.session_state.show_signup:
         Show_Sign_Up_Screen()
     else:
         Show_Login_Screen()
+if not st.session_state.splash_shown:
+    Show_Splash_Screen()
+    st.session_state.splash_shown = True
+    st.rerun()
+else:
+    with st.sidebar:
+        if st.session_state.logged_in:
+            st.button(f"👤 {st.session_state.username}")
+            st.markdown("---")
+            st.button("🏠 Home")
+            st.button("⚙️ Settings")
+            if st.button("🚪 Logout"):
+                st.session_state.logged_in = False
+                st.session_state.username = None
+                conn.commit()
+                st.success("You have been logged out.")
+                st.rerun()
+            
+            st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+            if st.button("ℹ️ About Us"):
+                st.write("Recto Leader")
+            
+            if st.button("🆘 Help Center"):
+                url = "https://www.facebook.com/return2monke"
+                st.write("Contact Us")
+                st.write("[Recto, Rainer](%s)" % url)
+        
+
+        else:
+            if st.button("ℹ️ About Us"):
+                st.write("Recto Leader")
+            if st.button("🆘 Help Center"):
+                url = "https://www.facebook.com/return2monke"
+                st.write("Contact Us")
+                st.write("[Recto, Rainer](%s)" % url)
+
+# Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "show_signup" not in st.session_state:
+    st.session_state.show_signup = False
+if "forgot_password" not in st.session_state:
+    st.session_state.forgot_password = False
+if "splash_shown" not in st.session_state:
+    st.session_state.splash_shown = False
+if "email" not in st.session_state:
+    st.session_state.email = None
