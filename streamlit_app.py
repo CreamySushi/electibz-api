@@ -412,8 +412,7 @@ else:
     with st.sidebar:
         if st.session_state.logged_in:
             st.button(f"👤 {st.session_state.username}")
-            st.markdown("---")
-            st.button("🏠 Home")                
+            st.markdown("---")                
             if st.button("🚪 Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
