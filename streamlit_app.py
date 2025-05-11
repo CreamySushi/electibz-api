@@ -436,7 +436,9 @@ else:
             if st.button("? Help Center"):
                 url = "https://www.facebook.com/return2monke"
                 st.write("Contact Us")
-                st.write("[Recto, Rainer](%s)" % url)
+                st.write("FB:[Recto, Rainer](%s)" % url)
+                st.write("c22-1826-466@uphsl.edu.ph")
+                
             
 if st.session_state.logged_in:
     Show_Main_Screen()
