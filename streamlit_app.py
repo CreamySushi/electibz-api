@@ -510,8 +510,6 @@ else:
             st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
             if st.button("About Us"):
                 Show_About_Us()
-                st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
-            
             if st.button("Contact Us"):
                 
                 st.markdown("""
@@ -533,7 +531,7 @@ else:
 
         else:
             if st.button("About Us"):
-                st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
+                Show_About_Us()
             if st.button("Contact Us"):
                 
                 st.markdown("""
