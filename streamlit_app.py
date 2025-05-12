@@ -498,6 +498,14 @@ else:
                         </button>
                     </a>
                 """, unsafe_allow_html=True)
+                st.markdown("""
+                    <div style="color: white;">
+                        <h4>Contact Information</h4>
+                        <p><strong>Phone:</strong> +63 912 345 6789</p>
+                        <p><strong>Address:</strong> University of Perpetual Help System - Laguna, Biñan City, Laguna, Philippines</p>
+                        <p><strong>Email:</strong> support@uphs-calories.com</p>
+                    </div>
+                """, unsafe_allow_html=True)
                 
 
         else:
@@ -510,6 +518,14 @@ else:
                             Visit Facebook Page
                         </button>
                     </a>
+                """, unsafe_allow_html=True)
+                st.markdown("""
+                    <div style="color: white;">
+                        <h4>Contact Information</h4>
+                        <p><strong>Phone:</strong> +63 912 345 6789</p>
+                        <p><strong>Address:</strong> University of Perpetual Help System - Laguna, Biñan City, Laguna, Philippines</p>
+                        <p><strong>Email:</strong> support@uphs-calories.com</p>
+                    </div>
                 """, unsafe_allow_html=True)
 initialize_database()
 
