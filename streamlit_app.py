@@ -88,7 +88,8 @@ conn.commit()
 
 #Styling Sidebar buttons
 st.markdown("""
-    <style> 
+    <style>
+        font-family: 'Arial', sans-serif;
         section[data-testid="stSidebar"] div.stButton > button {
             background: none !important;
             border: none !important;
@@ -169,7 +170,7 @@ def initialize_database():
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
-        <div style='text-align: center; margin-top: 250px;'>
+        <div style='text-align: center; margin-top: 250px;font-family: 'Arial', sans-serif;'>
             <h1>Welcome to Calories Burn Predictor</h1>
             <p>Loading, please wait...</p>
         </div>
@@ -255,7 +256,7 @@ def Show_Login_Screen():
 
     st.markdown("""
         <style>
-            /* Remove form container shadow and round corners */
+            font-family: 'Arial', sans-serif;
             div[data-testid="stForm"] {
                 background-color: transparent;
                 border: none;
@@ -263,7 +264,6 @@ def Show_Login_Screen():
                 padding: 0;
             }
 
-            /* "Forgot Password" button styling */
             .stButton[id="forgot-password-button"] > button {
                 width: auto;
                 text-align: left;
@@ -272,18 +272,15 @@ def Show_Login_Screen():
                 margin-top: 10px;
             }
 
-            /* Buttons alignment and spacing */
             .stform[id="login-form"], .stButton[id="forgot-password-button"] {
                 width: auto;
                 display: inline-block;
             }
 
-            /* "Sign Up" button spacing */
             .stButton[id="signup-button"] {
                 margin-top: 20px !important;
             }
 
-            /* Text styling */
             .stText {
                 font-size: 14px;
                 margin-top: 0.25rem;
@@ -497,7 +494,7 @@ else:
             if st.button("Contact Us"):
                 st.markdown("""
                     <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
-                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer; font-family: 'Arial', sans-serif;'>
                             Visit Facebook Page
                         </button>
                     </a>
@@ -510,7 +507,7 @@ else:
             if st.button("Contact Us"):
                 st.markdown("""
                     <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
-                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;font-family: 'Arial', sans-serif;'>
                             Visit Facebook Page
                         </button>
                     </a>
