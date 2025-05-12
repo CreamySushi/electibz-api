@@ -167,7 +167,7 @@ def initialize_database():
 
     conn.commit()
     conn.close()
-
+initialize_database()
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
@@ -487,7 +487,6 @@ def Show_About_Us_Screen():
 
 
 
-initialize_database()
 # Main navigation flow
 if not st.session_state.splash_shown:
     Show_Splash_Screen()
