@@ -467,7 +467,7 @@ def Show_Main_Screen():
             st.pyplot(fig)
         else:
             st.warning("Could not generate graph due to API errors.")
-
+initialize_database()
 # Main navigation flow
 if not st.session_state.splash_shown:
     Show_Splash_Screen()
@@ -531,7 +531,6 @@ else:
                     </a>
                 """, unsafe_allow_html=True)
 
-initialize_database()
 
 if st.session_state.logged_in:
     Show_Main_Screen()
