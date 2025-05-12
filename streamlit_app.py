@@ -478,9 +478,9 @@ else:
         if st.session_state.logged_in:
             st.button(f"Welcome, {st.session_state.username}")
             st.markdown("---")
-            st.markdown("<br><br><br>", unsafe_allow_html=True)
             if st.button("Refresh"):
                 st.rerun()
+            st.markdown("<br><br><br>", unsafe_allow_html=True)
             if st.button(" Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
