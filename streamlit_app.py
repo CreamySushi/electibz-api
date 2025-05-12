@@ -89,7 +89,6 @@ conn.commit()
 #Styling Sidebar buttons
 st.markdown("""
     <style>
-        font-family: 'Arial', sans-serif;
         section[data-testid="stSidebar"] div.stButton > button {
             background: none !important;
             border: none !important;
@@ -256,7 +255,7 @@ def Show_Login_Screen():
 
     st.markdown("""
         <style>
-            font-family: 'Arial', sans-serif;
+
             div[data-testid="stForm"] {
                 background-color: transparent;
                 border: none;
