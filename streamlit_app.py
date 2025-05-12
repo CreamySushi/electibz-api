@@ -57,11 +57,9 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Connect to SQLite database
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
 
-# Create users table if not exists
 c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,11 +125,11 @@ def initialize_database():
     conn = sqlite3.connect('calorie_history.db')
     c = conn.cursor()
 
-    # Define admin user credentials
-    admin_email = "Admin123@administrator.com"  # Define admin email here
+   
+    admin_email = "Admin123@administrator.com" 
     admin_password = "group3admin"
     
-    # Create tables if not exists
+
     c.execute(''' 
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,7 +154,7 @@ def initialize_database():
         )
     ''')
 
-    # Create default admin user only if not exists
+    
     admin = "Admin"
     c.execute("SELECT * FROM users WHERE email = ?", (admin_email,))
     if not c.fetchone():
@@ -351,7 +349,7 @@ def Show_Main_Screen():
         st.rerun()
 
     if st.session_state.admin:
-        st.subheader("📜 All Users' Prediction History (Admin View)")
+        st.subheader("📜 All Users' Prediction History ")
 
         c.execute('''
             SELECT username, gender, age, height, weight, duration, heart_rate, body_temp, calories_burned
@@ -393,7 +391,7 @@ def Show_Main_Screen():
         with st.spinner("Sending data to API..."):
             try:
                 response = requests.post(api_url, json=data, timeout=10)
-                response.raise_for_status()  # Raise an error for bad status
+                response.raise_for_status()  
                 prediction = response.json()["Predicted Calories"][0]
                 st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
  
@@ -438,7 +436,7 @@ def Show_Main_Screen():
         st.subheader("Calories Burned vs Workout Duration")
 
         # Range of durations to simulate
-        durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
+        durations = list(range(5, 65, 5))  
         predictions = []
 
         for d in durations:
@@ -457,7 +455,7 @@ def Show_Main_Screen():
             else:
                 predictions.append(None)
 
-        # Filter out None values (errors)
+       
         durations = [d for d, p in zip(durations, predictions) if p is not None]
         predictions = [p for p in predictions if p is not None]
 
@@ -482,10 +480,10 @@ if not st.session_state.splash_shown:
 else:
     with st.sidebar:
         if st.session_state.logged_in:
-            st.button(f"👤 {st.session_state.username}")
+            st.button(f"Welcome, {st.session_state.username}")
             st.markdown("---")
-            st.button("🏠 Home")                
-            if st.button("🚪 Logout"):
+            st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
+            if st.button(" Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
                 st.session_state.admin = False
@@ -493,10 +491,10 @@ else:
                 st.rerun()
             
             st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-            if st.button("ℹ About Us"):
-                st.write("Recto Leader")
+            if st.button("About Us"):
+                st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
             
-            if st.button("? Contact Us"):
+            if st.button("Contact Us"):
                 st.markdown("""
                     <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
                         <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
@@ -508,8 +506,8 @@ else:
 
         else:
             if st.button("About Us"):
-                st.write(" Recto Leader")
-            if st.button("? Contact Us"):
+                st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
+            if st.button("Contact Us"):
                 st.markdown("""
                     <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
                         <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
