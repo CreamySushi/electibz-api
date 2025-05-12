@@ -358,7 +358,7 @@ def Show_Main_Screen():
                 "Username", "Gender", "Age", "Height (cm)", "Weight (kg)",
                 "Duration (min)", "Heart Rate", "Body Temp (°C)", "Calories Burned"
             ])
-            st.dataframe(df)
+            st.dataframe(df, use_container_width=True)
         else:
             st.info("No prediction history available.")
         return
