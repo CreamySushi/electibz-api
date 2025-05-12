@@ -478,7 +478,9 @@ else:
         if st.session_state.logged_in:
             st.button(f"Welcome, {st.session_state.username}")
             st.markdown("---")
-            st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
+            st.markdown("<br><br><br>", unsafe_allow_html=True)
+            if st.button("Refresh"):
+                st.rerun()
             if st.button(" Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
@@ -486,7 +488,7 @@ else:
                 conn.commit()
                 st.rerun()
             
-            st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+            st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
             if st.button("About Us"):
                 st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
             
