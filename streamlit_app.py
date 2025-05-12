@@ -491,13 +491,7 @@ else:
                 st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
             
             if st.button("Contact Us"):
-                st.markdown("""
-                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
-                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer; font-family: 'Arial', sans-serif;'>
-                            Visit Facebook Page
-                        </button>
-                    </a>
-                """, unsafe_allow_html=True)
+                
                 st.markdown("""
                     <div style="color: white;">
                         <h4>Contact Information</h4>
@@ -505,6 +499,13 @@ else:
                         <p><strong>Address:</strong> University of Perpetual Help System - Laguna, Biñan City, Laguna, Philippines</p>
                         <p><strong>Email:</strong> support@uphs-calories.com</p>
                     </div>
+                """, unsafe_allow_html=True)
+                st.markdown("""
+                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#3e93d2;color:white;border:none;cursor:pointer; font-family: 'Arial', sans-serif;'>
+                            Visit Facebook Page
+                        </button>
+                    </a>
                 """, unsafe_allow_html=True)
                 
 
@@ -512,21 +513,22 @@ else:
             if st.button("About Us"):
                 st.write("This is a project made by college students of University of Perpetual Help System [Laguna] as an output application to track the calorie burn of the user by input some necessary details to calculate the calories. This application uses a machine learning algorithm to calculate calories individually using xgb algorithm.")
             if st.button("Contact Us"):
-                st.markdown("""
-                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
-                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;font-family: 'Arial', sans-serif;'>
-                            Visit Facebook Page
-                        </button>
-                    </a>
-                """, unsafe_allow_html=True)
+                
                 st.markdown("""
                     <div style="color: white;">
-                        <h4>Contact Information</h4>
                         <p><strong>Phone:</strong> +63 912 345 6789</p>
                         <p><strong>Address:</strong> University of Perpetual Help System - Laguna, Biñan City, Laguna, Philippines</p>
                         <p><strong>Email:</strong> support@uphs-calories.com</p>
                     </div>
                 """, unsafe_allow_html=True)
+                st.markdown("""
+                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#3e93d2;color:white;border:none;cursor:pointer;font-family: 'Arial', sans-serif;'>
+                            Visit Facebook Page
+                        </button>
+                    </a>
+                """, unsafe_allow_html=True)
+
 initialize_database()
 
 if st.session_state.logged_in:
