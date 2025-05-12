@@ -7,8 +7,8 @@ import sqlite3
 import bcrypt
 import re
 
-
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
+
 
 # Initialize session state variables
 if "logged_in" not in st.session_state:
@@ -23,6 +23,8 @@ if "splash_shown" not in st.session_state:
     st.session_state.splash_shown = False
 if "email" not in st.session_state:
     st.session_state.email = None
+if "admin" not in st.session_state:
+    st.session_state.admin = False
 
 background_image = """
 <style>
@@ -120,6 +122,52 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
                 
+
+def initialize_database():
+    conn = sqlite3.connect('calorie_history.db')
+    c = conn.cursor()
+
+    # Define admin user credentials
+    admin_email = "Admin123@administrator.com"  # Define admin email here
+    admin_password = "group3admin"
+    
+    # Create tables if not exists
+    c.execute(''' 
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            email TEXT UNIQUE,
+            password TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            gender TEXT,
+            age INTEGER,
+            height REAL,
+            weight REAL,
+            duration INTEGER,
+            heart_rate INTEGER,
+            body_temp REAL,
+            calories_burned REAL
+        )
+    ''')
+
+    # Create default admin user only if not exists
+    admin = "Admin"
+    c.execute("SELECT * FROM users WHERE email = ?", (admin_email,))
+    if not c.fetchone():
+        hashed_admin_pw = bcrypt.hashpw(admin_password.encode(), bcrypt.gensalt()).decode()
+        c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                  (admin, admin_email, hashed_admin_pw))
+        print("Admin account created.")
+
+    conn.commit()
+    conn.close()
+
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
@@ -195,7 +243,11 @@ def Show_Login_Screen():
                 if user and bcrypt.checkpw(password.encode(), user[3].encode()):
                     st.session_state.logged_in = True
                     st.session_state.username = user[1]
-                    st.session_state.email = user[2] 
+                    st.session_state.email = user[2]
+                    if user[2] == "Admin123@administrator.com":
+                        st.session_state.admin = True
+                    else:
+                        st.session_state.admin = False 
                     st.success("Login successful!")
                     st.rerun()
                 else:
@@ -297,6 +349,25 @@ def Show_Main_Screen():
         st.error("No user session found. Please log in again.")
         st.session_state.logged_in = False
         st.rerun()
+
+    if st.session_state.admin:
+        st.subheader("📜 All Users' Prediction History (Admin View)")
+
+        c.execute('''
+            SELECT username, gender, age, height, weight, duration, heart_rate, body_temp, calories_burned
+            FROM history
+        ''')
+        data = c.fetchall()
+
+        if data:
+            df = pd.DataFrame(data, columns=[
+                "Username", "Gender", "Age", "Height (cm)", "Weight (kg)",
+                "Duration (min)", "Heart Rate", "Body Temp (°C)", "Calories Burned"
+            ])
+            st.dataframe(df)
+        else:
+            st.info("No prediction history available.")
+        return
     
     # User Inputs
     gender = st.selectbox("Gender", ["Male", "Female"])
@@ -412,10 +483,12 @@ else:
     with st.sidebar:
         if st.session_state.logged_in:
             st.button(f"👤 {st.session_state.username}")
-            st.markdown("---")                
+            st.markdown("---")
+            st.button("🏠 Home")                
             if st.button("🚪 Logout"):
                 st.session_state.logged_in = False
                 st.session_state.username = None
+                st.session_state.admin = False
                 conn.commit()
                 st.rerun()
             
@@ -424,19 +497,28 @@ else:
                 st.write("Recto Leader")
             
             if st.button("? Contact Us"):
-                url = "https://www.facebook.com/return2monke"
-                st.write("[Recto, Rainer](%s)" % url)
-        
+                st.markdown("""
+                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
+                            Visit Facebook Page
+                        </button>
+                    </a>
+                """, unsafe_allow_html=True)
+                
 
         else:
-            if st.button("ℹ  About Us"):
+            if st.button("About Us"):
                 st.write(" Recto Leader")
-            if st.button("? Contant Us):
-                url = "https://www.facebook.com/return2monke"
-                st.write("FB:[Recto, Rainer](%s)" % url)
-                st.write("c22-1826-466@uphsl.edu.ph")
-                
-            
+            if st.button("? Contact Us"):
+                st.markdown("""
+                    <a href="https://www.facebook.com/profile.php?id=61576137483701" target="_blank">
+                        <button style='font-size:20px;padding:10px 20px;border-radius:10px;background-color:#4CAF50;color:white;border:none;cursor:pointer;'>
+                            Visit Facebook Page
+                        </button>
+                    </a>
+                """, unsafe_allow_html=True)
+initialize_database()
+
 if st.session_state.logged_in:
     Show_Main_Screen()
 else:
@@ -446,3 +528,4 @@ else:
         Show_Sign_Up_Screen()
     else:
         Show_Login_Screen()
+
