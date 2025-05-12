@@ -423,18 +423,16 @@ else:
             if st.button("ℹ About Us"):
                 st.write("Recto Leader")
             
-            if st.button("? Help Center"):
+            if st.button("? Contact Us"):
                 url = "https://www.facebook.com/return2monke"
-                st.write("Contact Us")
                 st.write("[Recto, Rainer](%s)" % url)
         
 
         else:
             if st.button("ℹ  About Us"):
                 st.write(" Recto Leader")
-            if st.button("? Help Center"):
+            if st.button("? Contant Us):
                 url = "https://www.facebook.com/return2monke"
-                st.write("Contact Us")
                 st.write("FB:[Recto, Rainer](%s)" % url)
                 st.write("c22-1826-466@uphsl.edu.ph")
                 
