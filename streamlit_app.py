@@ -5,34 +5,66 @@ import time
 import pandas as pd
 import sqlite3
 import bcrypt
+import re
 
 st.set_page_config(page_title="Calorie Burn Predictor",page_icon="calories.ico",initial_sidebar_state="collapsed")
 
-# Function to hide sidebar toggle
-def hide_sidebar_toggle():
-    st.markdown("""
-        <style>
-            /* Hide the sidebar completely */
-            [data-testid="stSidebar"] {
-                display: none !important;
-            }
-            /* Hide the sidebar toggle button */
-            [data-testid="collapsedControl"] {
-                display: none !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-hide_sidebar_toggle()
 
-# Connect to SQLite database
+# Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "show_signup" not in st.session_state:
+    st.session_state.show_signup = False
+if "forgot_password" not in st.session_state:
+    st.session_state.forgot_password = False
+if "splash_shown" not in st.session_state:
+    st.session_state.splash_shown = False
+if "email" not in st.session_state:
+    st.session_state.email = None
+if "admin" not in st.session_state:
+    st.session_state.admin = False
+
+background_image = """
+<style>
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://t3.ftcdn.net/jpg/04/29/35/62/360_F_429356296_CVQ5LkC6Pl55kUNLqLisVKgTw9vjyif1.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+/* Make main container background transparent */
+[data-testid="stAppViewContainer"] > .main {
+    background-color: rgba(0,0,0,0);
+}
+
+/*Make sidebar transparent */
+[data-testid="stSidebar"] {
+    background-color: rgba(0,0,0,0.6);
+}
+</style>
+"""
+st.markdown(background_image, unsafe_allow_html=True)
+
+hide_streamlit_style = """
+    <style>
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 conn = sqlite3.connect('calorie_history.db', check_same_thread=False)
 c = conn.cursor()
 
-# Create users table if not exists (to store usernames and hashed passwords)
 c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
+        email TEXT UNIQUE,
         password TEXT
     )
 ''')
@@ -54,11 +86,71 @@ c.execute('''
 ''')
 conn.commit()
 
+button_style = """
+<style>
+div.stButton > button {
+    font-size: 14px;
+    font-weight: 400;
+    color: white;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+}
+</style>
+"""
+st.sidebar.markdown(button_style, unsafe_allow_html=True)
+                
 
+def initialize_database():
+    conn = sqlite3.connect('calorie_history.db')
+    c = conn.cursor()
+
+   
+    admin_email = "Admin123@administrator.com" 
+    admin_password = "group3admin"
+    
+
+    c.execute(''' 
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            email TEXT UNIQUE,
+            password TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            gender TEXT,
+            age INTEGER,
+            height REAL,
+            weight REAL,
+            duration INTEGER,
+            heart_rate INTEGER,
+            body_temp REAL,
+            calories_burned REAL
+        )
+    ''')
+
+    
+    admin = "Admin"
+    c.execute("SELECT * FROM users WHERE email = ?", (admin_email,))
+    if not c.fetchone():
+        hashed_admin_pw = bcrypt.hashpw(admin_password.encode(), bcrypt.gensalt()).decode()
+        c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                  (admin, admin_email, hashed_admin_pw))
+        print("Admin account created.")
+
+    conn.commit()
+    conn.close()
+initialize_database()
 def Show_Splash_Screen():
     splash = st.empty()  
     splash.markdown("""
-        <div style='text-align: center; margin-top: 250px;'>
+        <div style='text-align: center; margin-top: 250px;font-family: 'Arial', sans-serif;'>
             <h1>Welcome to Calories Burn Predictor</h1>
             <p>Loading, please wait...</p>
         </div>
@@ -67,57 +159,116 @@ def Show_Splash_Screen():
     splash.empty()
 
 def Show_Sign_Up_Screen():
-    st.title("📝 Sign Up")
+    st.title("Sign Up")
 
     username = st.text_input("Username")
+    email = st.text_input("Email", placeholder="username@gmail.com")
     password = st.text_input("Password", type="password")
     password_confirm = st.text_input("Confirm password", type="password")
 
+    # Check for email format like @something.com
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+
     if st.button("Register"):
-        if not username or not password or not password_confirm:
+        if not email or not password or not password_confirm or not username:
             st.warning("Please fill in all fields.")
-        elif len(username) < 6:
-            st.error("Username must be at least 6 characters long.")
+        elif len(email) < 6:
+            st.error("Email must be at least 6 characters long.")
         elif len(password) < 6:
             st.error("Password must be at least 6 characters long.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif email == username:
+            st.error("Email and Username must be different.")
+        elif not re.match(email_regex, email):
+            st.error("Email must be in the format 'username@something.com'.")
         else:
+            # Check if username already exists
             c.execute("SELECT * FROM users WHERE username = ?", (username,))
             if c.fetchone():
                 st.error("Username already exists.")
             else:
-                hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-                conn.commit()
-                st.success("Account created! Please log in.")
-                st.session_state.show_signup = False
-                st.session_state.logged_in = False
-                st.rerun()
+                # Check if email is already used
+                c.execute("SELECT * FROM users WHERE email = ?", (email,))
+                if c.fetchone():
+                    st.error("Email is already registered.")
+                else:
+                    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                    c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, hashed_password))
+                    conn.commit()
+                    st.success("Account created! Please log in.")
+                    st.session_state.show_signup = False
+                    st.session_state.username = None
+                    st.session_state.email = None
+                    st.rerun()
 
     if st.button("Back to Login"):
         st.session_state.show_signup = False
         st.rerun()
-        
+                
 def Show_Login_Screen():
-    st.title("🔐 Login")
+    st.title("Login")
     
-    username = st.text_input("Enter your Username")
-    password = st.text_input("Enter your Password", type="password")
+    with st.form(clear_on_submit=False, key="login-form"):
+        email = st.text_input("Email", placeholder="username@gmail.com")
+        password = st.text_input("Password", type="password", placeholder="Password must be at least 6 characters long")
+        submitted = st.form_submit_button("Login")
 
-    if st.button("Login"):
-        if username and password:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
-            user = c.fetchone()
-            if user and bcrypt.checkpw(password.encode(), user[2].encode()):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.success("Login successful!")
-                st.rerun()
+        if submitted:
+            if email and password:
+                c.execute("SELECT * FROM users WHERE email = ?", (email,))
+                user = c.fetchone()
+
+                if user and bcrypt.checkpw(password.encode(), user[3].encode()):
+                    st.session_state.logged_in = True
+                    st.session_state.username = user[1]
+                    st.session_state.email = user[2]
+                    if user[2] == "Admin123@administrator.com":
+                        st.session_state.admin = True
+                    else:
+                        st.session_state.admin = False 
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    st.error("Invalid email or password.")
             else:
-                st.error("Invalid username or password.")
-        else:
-            st.warning("Please fill in all fields.")
+                st.warning("Please fill in both fields.")
+
+    st.markdown("""
+        <style>
+
+            div[data-testid="stForm"] {
+                background-color: transparent;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .stButton[id="forgot-password-button"] > button {
+                width: auto;
+                text-align: left;
+                padding-left: 0;
+                font-weight: normal;
+                margin-top: 10px;
+            }
+
+            .stform[id="login-form"], .stButton[id="forgot-password-button"] {
+                width: auto;
+                display: inline-block;
+            }
+
+            .stButton[id="signup-button"] {
+                margin-top: 20px !important;
+            }
+
+            .stText {
+                font-size: 14px;
+                margin-top: 0.25rem;
+                text-align: center;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 
     if st.button("Forgot Password?"):
         st.session_state.forgot_password = True
@@ -130,34 +281,38 @@ def Show_Login_Screen():
         st.rerun()
 
 def Show_Forgot_Password_Screen():
-    st.title("🔑 Forgot Password")
+    st.title("Forgot Password")
 
-
-    username = st.text_input("Enter your username")
+    email = st.text_input("Enter your email", placeholder="username@gmail.com")
     password = st.text_input("Enter new password", type="password")
     password_confirm = st.text_input("Confirm new password", type="password")
 
+    # Check for email format like @something.com
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+
     if st.button("Reset Password"):
-        if not username or not password or not password_confirm:
+        if not email or not password or not password_confirm:
             st.error("Please fill in all fields.")
         elif password != password_confirm:
             st.error("Passwords do not match.")
+        elif not re.match(email_regex, email):
+            st.error("Email must be in the format 'username@gmail.com'.")
         else:
-            c.execute("SELECT * FROM users WHERE username = ?", (username,))
+            c.execute("SELECT * FROM users WHERE email = ?", (email,))
             if c.fetchone():
                 hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-                c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_pw, username))
+                c.execute("UPDATE users SET password = ? WHERE email = ?", (hashed_pw, email))
                 conn.commit()
                 st.success("Password reset successfully. Please login.")
                 st.session_state.forgot_password = False
                 st.rerun()
             else:
-                st.error("Username not found.")
+                st.error("Email not found.")
 
     if st.button("Back to Login"):
         st.session_state.forgot_password = False
         st.rerun()
-        
+
 def Show_Main_Screen():
     
     st.title("🔥 Calorie Burn Predictor")
@@ -169,18 +324,25 @@ def Show_Main_Screen():
         st.error("No user session found. Please log in again.")
         st.session_state.logged_in = False
         st.rerun()
-    
-    st.write(f"Logged in as: **{st.session_state.username}**")
-    
-    if st.button("Logout"):
-        st.session_state.logged_in = False
-        st.session_state.username = None  # Clear username as well
-        conn.commit()
-        c.execute("SELECT username FROM users")
-        users = c.fetchall()
-        st.write("All users in DB:", users)
-        st.success("You have been logged out.")
-        st.rerun()
+
+    if st.session_state.admin:
+        st.subheader("📜 All Users' Prediction History ")
+
+        c.execute('''
+            SELECT username, gender, age, height, weight, duration, heart_rate, body_temp, calories_burned
+            FROM history
+        ''')
+        data = c.fetchall()
+
+        if data:
+            df = pd.DataFrame(data, columns=[
+                "Username", "Gender", "Age", "Height (cm)", "Weight (kg)",
+                "Duration (min)", "Heart Rate", "Body Temp (°C)", "Calories Burned"
+            ])
+            st.data_editor(df, use_container_width=True, disabled=True)
+        else:
+            st.info("No prediction history available.")
+        return
     
     # User Inputs
     gender = st.selectbox("Gender", ["Male", "Female"])
@@ -206,10 +368,10 @@ def Show_Main_Screen():
         with st.spinner("Sending data to API..."):
             try:
                 response = requests.post(api_url, json=data, timeout=10)
-                response.raise_for_status()  # Raise an error for bad status
+                response.raise_for_status()  
                 prediction = response.json()["Predicted Calories"][0]
                 st.success(f"🔥 Estimated Calories Burned: {prediction:.2f}")
-
+ 
                 if prediction < 50:
                     st.info("Your workout was light. Try to add a few more minutes next time to achieve more calorie burn.")
                 elif 50 <= prediction <= 150:
@@ -248,10 +410,10 @@ def Show_Main_Screen():
 
 
     if st.checkbox("Show Calories vs Duration Graph"):
-        st.subheader("📊 Calories Burned vs Workout Duration")
+        st.subheader("Calories Burned vs Workout Duration")
 
         # Range of durations to simulate
-        durations = list(range(5, 65, 5))  # 5 to 60 minutes, step 5
+        durations = list(range(5, 65, 5))  
         predictions = []
 
         for d in durations:
@@ -270,43 +432,69 @@ def Show_Main_Screen():
             else:
                 predictions.append(None)
 
-        # Filter out None values (errors)
+       
         durations = [d for d, p in zip(durations, predictions) if p is not None]
         predictions = [p for p in predictions if p is not None]
 
         if predictions:
-            fig, ax = plt.subplots()
-            ax.plot(durations, predictions, marker='o')
-            ax.set_xlabel("Duration (minutes)")
-            ax.set_ylabel("Calories Burned")
-            ax.set_title("Calories Burned vs Workout Duration")
+            fig, ax = plt.subplots(facecolor="#1e1e1e")
+            ax.plot(durations, predictions, marker='o', color="#00ff99")
+            ax.set_facecolor("#2b2b2b")  
+            ax.tick_params(colors='white')
+            ax.xaxis.label.set_color('white')
+            ax.yaxis.label.set_color('white')
+            ax.title.set_color('white')      
+            ax.grid(True, linestyle='--', alpha=0.3)
             st.pyplot(fig)
         else:
             st.warning("Could not generate graph due to API errors.")
 
+if st.session_state.get("logged_in", False):
+        with st.sidebar:
+            st.markdown(
+                f"""
+                <div style="font-size: 0.9rem; font-weight: 500; padding: 0.5rem 0; color: white;">
+                    Welcome, {st.session_state.username}
+                </div>
+                """, unsafe_allow_html=True
+            )
 
-# Show splash screen only once per session
-if "splash_shown" not in st.session_state:
+            if st.button("🔄 Refresh"):
+                st.rerun()
+
+            st.markdown(
+                """
+                <style>
+                div.stButton > button {
+                    font-size: 0.9rem !important;
+                    font-weight: 500 !important;
+                    color: white !important;
+                    background: none !important;
+                    border: none !important;
+                    text-align: left !important;
+                    padding: 0.25rem 0 !important;
+                }
+                </style>
+                """, unsafe_allow_html=True
+            )
+
+            if st.button("🚪 Logout"):
+                st.session_state.logged_in = False
+                st.session_state.username = None
+                st.session_state.admin = False
+                st.rerun()
+                
+# Main navigation flow
+if not st.session_state.splash_shown:
     Show_Splash_Screen()
     st.session_state.splash_shown = True
-
-# Initialize session state
-if "show_signup" not in st.session_state:
-    st.session_state.show_signup = False
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "forgot_password" not in st.session_state:
-    st.session_state.forgot_password = False
-
-
-# Main navigation flow
+    st.rerun()
 if st.session_state.logged_in:
     Show_Main_Screen()
 else:
     if st.session_state.forgot_password:
-        Show_Forgot_Password_Screen()  # You'll define this function
+        Show_Forgot_Password_Screen()
     elif st.session_state.show_signup:
         Show_Sign_Up_Screen()
     else:
         Show_Login_Screen()
-
